@@ -145,7 +145,7 @@ export function BioluminescentCanvas({ isDark }: BioluminescentCanvasProps) {
     updateTextBoundingBox();
 
     const animate = () => {
-      // Clear with theme background
+      // Draw background with trail effect
       ctx.globalCompositeOperation = "source-over";
       if (isDark) {
         ctx.fillStyle = "rgba(2, 13, 6, 0.15)";
@@ -153,10 +153,8 @@ export function BioluminescentCanvas({ isDark }: BioluminescentCanvasProps) {
         ctx.fillStyle = "rgba(248, 250, 245, 0.15)";
       }
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Set composite operation for particles
-      // Dark: "screen" makes bioluminescent fireflies pop
-      // Light: "source-over" for subtle golden dust
+      
+      // Particle composite mode
       ctx.globalCompositeOperation = isDark ? "screen" : "source-over";
 
       const particles = particlesRef.current;
