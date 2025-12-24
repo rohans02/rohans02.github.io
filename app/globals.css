@@ -3,6 +3,14 @@
 
 @custom-variant dark (&:is(.dark *));
 
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
 /* Smooth theme transition */
 html {
   transition: background-color 0.5s ease, color 0.5s ease;

@@ -17,4 +17,5 @@ export interface MousePosition {
 
 export interface BioluminescentCanvasProps {
   isDark: boolean;
+  scrollProgress?: number;
 }

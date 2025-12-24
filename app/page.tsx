@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, Variants } from "framer-motion";
+import { motion, Variants, AnimatePresence } from "framer-motion";
 import { BioluminescentCanvas } from "@/components/canvas/bioluminescent-canvas";
-import { Button, ThemeToggle } from "@/components/ui";
+import { Button, ThemeToggle, LoadingScreen, FloatingDock } from "@/components/ui";
+import { About } from "@/components/sections";
 import { HERO_WORDS, THEME } from "@/config";
 
 const containerVariants: Variants = {
@@ -24,10 +25,13 @@ const wordVariants: Variants = {
 };
 
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(true);
   const [isDark, setIsDark] = useState(true);
   const [rippleActive, setRippleActive] = useState(false);
   const scrollArrowRef = useRef<HTMLDivElement>(null);
   const [proximityColor, setProximityColor] = useState("text-muted-foreground");
+  const [scrollY, setScrollY] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   const toggleTheme = () => {
     // Trigger ripple animation
@@ -62,8 +66,10 @@ export default function Home() {
           Math.pow(e.clientX - (rect.left + rect.width / 2), 2) +
           Math.pow(e.clientY - (rect.top + rect.height / 2), 2)
         );
-        // Use particle colors: dark = Electric Blue, light = Golden Tan
-        const activeColor = isDark ? "text-[rgb(3,25,226)]" : "text-[rgb(181,164,139)]";
+        // Use particle colors from theme
+        const activeColor = isDark 
+          ? `text-[rgb(${THEME.dark.particle.colors[0]})]` 
+          : `text-[rgb(${THEME.light.particle.colors[0]})]`;
         setProximityColor(dist < 120 ? activeColor : "text-muted-foreground");
       }
     };
@@ -71,10 +77,31 @@ export default function Home() {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [isDark]);
 
+  // Sync scroll for overlay
+  useEffect(() => {
+    const handleScroll = () => {
+      const y = window.scrollY;
+      setScrollY(y);
+      setScrollProgress(Math.min(y / window.innerHeight, 1));
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <main className="relative min-h-screen w-full overflow-hidden">
-      {/* 
-        CLIP-PATH THEME TRANSITION:
+    <>
+      <LoadingScreen isDark={isDark} onLoadingComplete={() => setIsLoading(false)} />
+      
+      {!isLoading && <FloatingDock isDark={isDark} className="z-50" />}
+
+      <motion.main 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isLoading ? 0 : 1 }}
+        transition={{ duration: 1 }}
+        className="relative min-h-screen w-full overflow-x-hidden"
+      >
+        {/* 
+          CLIP-PATH THEME TRANSITION:
         - Base layer: Current theme (canvas + content)
         - Overlay layer: New theme (clipped, reveals as circle expands)
         Both layers exist simultaneously, clip-path reveals the new one
@@ -83,52 +110,67 @@ export default function Home() {
       {/* ========== CURRENT THEME LAYER (z-0 to z-10) ========== */}
       
       {/* Current theme particles */}
-      <BioluminescentCanvas isDark={isDark} />
+      <BioluminescentCanvas isDark={isDark} scrollProgress={scrollProgress} />
       
       {/* Current theme content */}
       <section className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 text-center">
-        <div className="relative space-y-10 max-w-4xl">
+        <motion.div 
+          className="relative space-y-10 max-w-4xl"
+          variants={containerVariants}
+          initial="hidden"
+          animate={isLoading ? "hidden" : "visible"}
+        >
           <div className="space-y-6">
-            <h1
+            <motion.h1
               className="text-6xl md:text-8xl font-bold tracking-tighter leading-[1.1]"
               style={{ color: isDark ? THEME.dark.foreground : THEME.light.foreground }}
             >
               {HERO_WORDS.map((word, idx) => (
-                <span key={idx} className="inline-block mr-3">{word}</span>
+                <motion.span 
+                  key={idx} 
+                  variants={wordVariants}
+                  className="inline-block mr-3"
+                >
+                  {word}
+                </motion.span>
               ))}
-            </h1>
-            <p
+            </motion.h1>
+            {/* <motion.p
+              variants={wordVariants}
               className="text-xl md:text-2xl font-light tracking-wide opacity-70"
               style={{ color: isDark ? THEME.dark.foreground : THEME.light.foreground }}
             >
               Interactive Physics // Algorithmic Design.
-            </p>
+            </motion.p> */}
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-6 justify-center pt-10">
-            <Button
-              size="lg"
-              className={`h-14 px-10 text-md font-medium backdrop-blur-xl border transition-all duration-300 ${
-                isDark
-                  ? "bg-[rgb(3,25,226)]/20 hover:bg-[rgb(3,25,226)]/30 border-[rgb(3,25,226)]/40 text-[#ECFDF5] hover:shadow-[0_0_25px_rgba(3,25,226,0.3)]"
-                  : "bg-[rgb(181,164,139)]/20 hover:bg-[rgb(181,164,139)]/30 border-[rgb(181,164,139)]/40 text-[#1A2F1A] hover:shadow-[0_0_25px_rgba(181,164,139,0.3)]"
-              }`}
-            >
-              Explore Work
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className={`h-14 px-10 text-md font-medium backdrop-blur-xl transition-all duration-300 ${
-                isDark
-                  ? "bg-[rgb(0,8,74)]/50 hover:bg-[rgb(0,8,74)]/70 border-[rgb(0,8,74)] text-[#ECFDF5] hover:shadow-[0_0_20px_rgba(0,8,74,0.4)]"
-                  : "bg-[rgb(210,190,160)]/20 hover:bg-[rgb(210,190,160)]/30 border-[rgb(210,190,160)]/40 text-[#1A2F1A] hover:shadow-[0_0_20px_rgba(210,190,160,0.3)]"
-              }`}
-            >
-              Get in Touch
-            </Button>
-          </div>
-        </div>
+          <motion.div 
+            variants={wordVariants}
+            className="flex flex-col sm:flex-row gap-6 justify-center pt-10"
+          >
+              <Button
+                size="lg"
+                className={`h-14 px-10 text-md font-medium backdrop-blur-xl border transition-all duration-300 ${
+                  isDark
+                    ? `bg-[rgb(${THEME.dark.particle.colors[0]})]/20 hover:bg-[rgb(${THEME.dark.particle.colors[0]})]/30 border-[rgb(${THEME.dark.particle.colors[0]})]/40 text-[${THEME.dark.foreground}] hover:shadow-[0_0_25px_rgba(${THEME.dark.particle.colors[0]},0.3)]`
+                    : `bg-[rgb(${THEME.light.particle.colors[0]})]/20 hover:bg-[rgb(${THEME.light.particle.colors[0]})]/30 border-[rgb(${THEME.light.particle.colors[0]})]/40 text-[${THEME.light.foreground}] hover:shadow-[0_0_25px_rgba(${THEME.light.particle.colors[0]},0.3)]`
+                }`}
+              >
+                Explore Work
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className={`h-14 px-10 text-md font-medium backdrop-blur-xl transition-all duration-300 ${
+                  isDark
+                    ? `bg-[rgb(${THEME.dark.particle.colors[1]})]/50 hover:bg-[rgb(${THEME.dark.particle.colors[1]})]/70 border-[rgb(${THEME.dark.particle.colors[1]})] text-[${THEME.dark.foreground}] hover:shadow-[0_0_20px_rgba(${THEME.dark.particle.colors[1]},0.4)]`
+                    : `bg-[rgb(${THEME.light.particle.colors[1]})]/20 hover:bg-[rgb(${THEME.light.particle.colors[1]})]/30 border-[rgb(${THEME.light.particle.colors[1]})]/40 text-[${THEME.light.foreground}] hover:shadow-[0_0_20px_rgba(${THEME.light.particle.colors[1]},0.3)]`
+                }`}
+              >
+                Get in Touch
+              </Button>
+            </motion.div>
+        </motion.div>
 
         {/* Scroll Indicator */}
         <div
@@ -141,6 +183,8 @@ export default function Home() {
           <div className={`w-px h-12 bg-linear-to-b from-current to-transparent transition-colors duration-500 ${proximityColor}`} />
         </div>
       </section>
+
+      <About isDark={isDark} />
 
       {/* ========== NEW THEME LAYER (clip-path overlay) ========== */}
       <motion.div
@@ -158,70 +202,92 @@ export default function Home() {
           className="absolute inset-0"
           style={{ backgroundColor: isDark ? THEME.light.background : THEME.dark.background }}
         />
+
+        {!isLoading && <FloatingDock isDark={!isDark} className="z-10" animateEntrance={false} />}
         
         {/* New theme content (opposite colors) */}
-        <section className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 text-center">
-          <div className="relative space-y-10 max-w-4xl">
-            <div className="space-y-6">
-              <h1
-                className="text-6xl md:text-8xl font-bold tracking-tighter leading-[1.1]"
-                style={{ color: isDark ? THEME.light.foreground : THEME.dark.foreground }}
-              >
-                {HERO_WORDS.map((word, idx) => (
-                  <span key={idx} className="inline-block mr-3">{word}</span>
-                ))}
-              </h1>
-              <p
-                className="text-xl md:text-2xl font-light tracking-wide opacity-70"
-                style={{ color: isDark ? THEME.light.foreground : THEME.dark.foreground }}
-              >
-                Interactive Physics // Algorithmic Design.
-              </p>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-6 justify-center pt-10">
-              <Button
-                size="lg"
-                className={`h-14 px-10 text-md font-medium backdrop-blur-xl border ${
-                  isDark
-                    ? "bg-[rgb(181,164,139)]/20 border-[rgb(181,164,139)]/40 text-[#1A2F1A]"
-                    : "bg-[rgb(3,25,226)]/20 border-[rgb(3,25,226)]/40 text-[#ECFDF5]"
-                }`}
-              >
-                Explore Work
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className={`h-14 px-10 text-md font-medium backdrop-blur-xl ${
-                  isDark
-                    ? "bg-[rgb(210,190,160)]/20 border-[rgb(210,190,160)]/40 text-[#1A2F1A]"
-                    : "bg-[rgb(0,8,74)]/50 border-[rgb(0,8,74)] text-[#ECFDF5]"
-                }`}
-              >
-                Get in Touch
-              </Button>
-            </div>
-          </div>
-
-          {/* Scroll Indicator (new theme) */}
-          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3">
-            <p 
-              className="text-[10px] font-mono uppercase tracking-[0.2em]"
-              style={{ color: isDark ? THEME.light.muted : THEME.dark.muted }}
+        <div style={{ transform: `translateY(-${scrollY}px)` }}>
+          <section className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 text-center">
+            <motion.div 
+              className="relative space-y-10 max-w-4xl"
+              variants={containerVariants}
+              initial="hidden"
+              animate={isLoading ? "hidden" : "visible"}
             >
-              Scroll to discover
-            </p>
-            <div 
-              className="w-px h-12"
-              style={{ background: `linear-gradient(to bottom, ${isDark ? THEME.light.muted : THEME.dark.muted}, transparent)` }}
-            />
-          </div>
-        </section>
+              <div className="space-y-6">
+                <motion.h1
+                  className="text-6xl md:text-8xl font-bold tracking-tighter leading-[1.1]"
+                  style={{ color: isDark ? THEME.light.foreground : THEME.dark.foreground }}
+                >
+                  {HERO_WORDS.map((word, idx) => (
+                    <motion.span 
+                      key={idx} 
+                      variants={wordVariants}
+                      className="inline-block mr-3"
+                    >
+                      {word}
+                    </motion.span>
+                  ))}
+                </motion.h1>
+                {/* <motion.p
+                  variants={wordVariants}
+                  className="text-xl md:text-2xl font-light tracking-wide opacity-70"
+                  style={{ color: isDark ? THEME.light.foreground : THEME.dark.foreground }}
+                >
+                  Interactive Physics // Algorithmic Design.
+                </motion.p> */}
+              </div>
+
+              <motion.div 
+                variants={wordVariants}
+                className="flex flex-col sm:flex-row gap-6 justify-center pt-10"
+              >
+                <Button
+                  size="lg"
+                  className={`h-14 px-10 text-md font-medium backdrop-blur-xl border ${
+                    isDark
+                      ? `bg-[rgb(${THEME.light.particle.colors[0]})]/20 border-[rgb(${THEME.light.particle.colors[0]})]/40 text-[${THEME.light.foreground}]`
+                      : `bg-[rgb(${THEME.dark.particle.colors[0]})]/20 border-[rgb(${THEME.dark.particle.colors[0]})]/40 text-[${THEME.dark.foreground}]`
+                  }`}
+                >
+                  Explore Work
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className={`h-14 px-10 text-md font-medium backdrop-blur-xl ${
+                    isDark
+                      ? `bg-[rgb(${THEME.light.particle.colors[1]})]/20 border-[rgb(${THEME.light.particle.colors[1]})]/40 text-[${THEME.light.foreground}]`
+                      : `bg-[rgb(${THEME.dark.particle.colors[1]})]/50 border-[rgb(${THEME.dark.particle.colors[1]})] text-[${THEME.dark.foreground}]`
+                  }`}
+                >
+                  Get in Touch
+                </Button>
+              </motion.div>
+            </motion.div>
+
+            {/* Scroll Indicator (new theme) */}
+            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3">
+              <p 
+                className="text-[10px] font-mono uppercase tracking-[0.2em]"
+                style={{ color: isDark ? THEME.light.muted : THEME.dark.muted }}
+              >
+                Scroll to discover
+              </p>
+              <div 
+                className="w-px h-12"
+                style={{ background: `linear-gradient(to bottom, ${isDark ? THEME.light.muted : THEME.dark.muted}, transparent)` }}
+              />
+            </div>
+          </section>
+
+          <About isDark={!isDark} />
+        </div>
       </motion.div>
 
       {/* Theme Toggle (always on top) */}
       <ThemeToggle isDark={isDark} onToggle={toggleTheme} />
-    </main>
+    </motion.main>
+    </>
   );
 }

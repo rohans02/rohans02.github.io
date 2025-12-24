@@ -4,13 +4,19 @@ import { useEffect, useRef } from "react";
 import { Particle, BioluminescentCanvasProps } from "@/lib/types";
 import { THEME } from "@/config/theme";
 
-export function BioluminescentCanvas({ isDark }: BioluminescentCanvasProps) {
+export function BioluminescentCanvas({ isDark, scrollProgress = 0 }: BioluminescentCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
   const mouseRef = useRef({ x: -1000, y: -1000 });
   const animationRef = useRef<number | null>(null);
   const textBoundingBoxRef = useRef<DOMRect | null>(null);
   const imageLoadedRef = useRef<HTMLImageElement | null>(null);
+  const scrollProgressRef = useRef(0);
+
+  // Keep ref in sync for the animation loop
+  useEffect(() => {
+    scrollProgressRef.current = scrollProgress;
+  }, [scrollProgress]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -153,13 +159,43 @@ export function BioluminescentCanvas({ isDark }: BioluminescentCanvasProps) {
         ctx.fillStyle = "rgba(248, 250, 245, 0.15)";
       }
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      // Particle composite mode
-      ctx.globalCompositeOperation = isDark ? "screen" : "source-over";
 
+      const progress = scrollProgressRef.current;
       const particles = particlesRef.current;
       const { x: mouseX, y: mouseY } = mouseRef.current;
       const repulsionRadius = 180;
+      
+      // 1. Draw "Neural Connections" (The Logic)
+      // Only start connecting as we scroll down
+      if (progress > 0.05) {
+        const connectionDist = 100 * progress;
+        const maxOpacity = 0.15 * progress;
+        const color = isDark ? THEME.dark.particle.colors[0] : THEME.light.particle.colors[0];
+
+        ctx.beginPath();
+        ctx.lineWidth = 0.5;
+        
+        // Optimization: Only check a subset of particles for connections to keep 60fps
+        for (let i = 0; i < particles.length; i += 2) {
+          for (let j = i + 2; j < particles.length; j += 15) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const distSq = dx * dx + dy * dy;
+
+            if (distSq < connectionDist * connectionDist) {
+              const dist = Math.sqrt(distSq);
+              const opacity = (1 - dist / connectionDist) * maxOpacity;
+              ctx.strokeStyle = `rgba(${color}, ${opacity})`;
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+            }
+          }
+        }
+        ctx.stroke();
+      }
+      
+      // Particle composite mode
+      ctx.globalCompositeOperation = isDark ? "screen" : "source-over";
 
       particles.forEach((particle) => {
         const dx = particle.x - mouseX;
@@ -173,8 +209,11 @@ export function BioluminescentCanvas({ isDark }: BioluminescentCanvasProps) {
           particle.vy += Math.sin(angle) * force * 0.6;
         }
 
-        particle.vx *= 0.96;
-        particle.vy *= 0.96;
+        // "The Descent" effect: particles slow down and become more stable
+        const friction = 0.96 - (progress * 0.05); 
+
+        particle.vx *= friction;
+        particle.vy *= friction;
         particle.vx += (Math.random() - 0.5) * 0.02;
         particle.vy += (Math.random() - 0.5) * 0.02;
 
