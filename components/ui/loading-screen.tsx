@@ -14,6 +14,9 @@ export function LoadingScreen({ isDark, onLoadingComplete }: LoadingScreenProps)
   const [progress, setProgress] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
 
+  // Number of vertical blocks for the exit animation
+  const BLOCKS = 10;
+
   useEffect(() => {
     const timer = setInterval(() => {
       setProgress((prev) => {
@@ -37,15 +40,37 @@ export function LoadingScreen({ isDark, onLoadingComplete }: LoadingScreenProps)
   return (
     <AnimatePresence>
       {isVisible && (
-        <motion.div
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.8, ease: "easeInOut" } }}
-          className="fixed inset-0 z-100 flex flex-col items-center justify-center"
-          style={{ 
-            backgroundColor: "#000",
-          }}
-        >
-          <div className="relative flex flex-col items-center space-y-12">
+        <div className="fixed inset-0 z-100 pointer-events-none overflow-hidden">
+          {/* Vertical Blocks Exit Animation */}
+          <div className="absolute inset-0 flex">
+            {[...Array(BLOCKS)].map((_, i) => (
+              <motion.div
+                key={i}
+                initial={{ y: 0 }}
+                exit={{ 
+                  y: "-100%",
+                  transition: { 
+                    duration: 0.8, 
+                    ease: [0.645, 0.045, 0.355, 1], // cubic-bezier for smooth acceleration
+                    delay: i * 0.05 
+                  } 
+                }}
+                className="h-full flex-1 bg-black"
+              />
+            ))}
+          </div>
+
+          {/* Content Container */}
+          <motion.div
+            initial={{ opacity: 1 }}
+            exit={{ 
+              opacity: 0, 
+              y: -20,
+              transition: { duration: 0.4, ease: "easeIn" } 
+            }}
+            className="relative w-full h-full flex flex-col items-center justify-center pointer-events-auto"
+          >
+            <div className="relative flex flex-col items-center space-y-12">
             {/* Ghost Animation from Uiverse.io */}
             <div id="ghost">
               <div id="red">
@@ -109,6 +134,7 @@ export function LoadingScreen({ isDark, onLoadingComplete }: LoadingScreenProps)
             </motion.p>
           </div>
         </motion.div>
+      </div>
       )}
     </AnimatePresence>
   );

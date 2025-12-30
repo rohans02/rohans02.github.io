@@ -1,456 +1,531 @@
+// "use client";
+
+// import { useState, useEffect, useRef } from "react";
+// import { motion, AnimatePresence } from "framer-motion";
+// import { 
+//   FileCode, 
+//   Terminal, 
+//   Settings, 
+//   Folder, 
+//   ChevronRight, 
+//   User, 
+//   Code, 
+//   Braces,
+//   Sparkles,
+//   Files,
+//   Cpu,
+//   Zap
+// } from "lucide-react";
+
+// interface AboutProps {
+//   isDark: boolean;
+// }
+
+// // 1. Define the "Files" content
+// const FILES = {
+//   "identity.tsx": {
+//     icon: <FileCode size={16} className="text-cyan-400" />,
+//     content: `const Developer = {
+//   name: "Your Name",
+//   role: "Creative Technologist",
+//   origin: "CS Major @ University",
+//   logic: "Building ecosystems, not apps.",
+//   mission: "Bridging retro aesthetics 
+//            with modern performance."
+// };`,
+//   },
+//   "stack.json": {
+//     icon: <Braces size={16} className="text-yellow-400" />,
+//     content: `{
+//   "languages": ["TypeScript", "Rust", "Python"],
+//   "frontend": ["React", "Next.js", "Tailwind"],
+//   "backend": ["Node.js", "PostgreSQL", "Redis"],
+//   "tools": ["Neovim", "Docker", "Framer Motion"]
+// }`,
+//   },
+//   "history.git": {
+//     icon: <Terminal size={16} className="text-emerald-400" />,
+//     content: `// RECENT DEPLOYMENTS
+// > Initializing experience.log...
+// [2024] Intern @ Tech Corp
+// [2023] Open Source Contributor
+// [2022] Freelance Developer
+// > Status: Looking for new challenges.`,
+//   }
+// };
+
+// type FileKey = keyof typeof FILES;
+
+// const MatrixRain = ({ isHovered }: { isHovered: boolean }) => {
+//   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+//   useEffect(() => {
+//     const canvas = canvasRef.current;
+//     if (!canvas) return;
+//     const ctx = canvas.getContext("2d");
+//     if (!ctx) return;
+
+//     canvas.width = 200;
+//     canvas.height = 200;
+
+//     const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=%\"'#&_(),.;:?!\\|{}<>[]^~";
+//     const fontSize = 10;
+//     const columns = canvas.width / fontSize;
+//     const drops: number[] = Array(Math.floor(columns)).fill(1);
+
+//     const draw = () => {
+//       ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+//       ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+//       ctx.fillStyle = "#10b981"; // Emerald
+//       ctx.font = `${fontSize}px monospace`;
+
+//       for (let i = 0; i < drops.length; i++) {
+//         const text = characters.charAt(Math.floor(Math.random() * characters.length));
+//         ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+//         if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+//           drops[i] = 0;
+//         }
+//         drops[i]++;
+//       }
+//     };
+
+//     let interval: NodeJS.Timeout;
+//     if (isHovered) {
+//       interval = setInterval(draw, 33);
+//     }
+
+//     return () => {
+//       if (interval) clearInterval(interval);
+//     };
+//   }, [isHovered]);
+
+//   return (
+//     <canvas 
+//       ref={canvasRef} 
+//       className={`absolute inset-0 w-full h-full transition-opacity duration-500 ${isHovered ? 'opacity-40' : 'opacity-0'}`}
+//     />
+//   );
+// };
+
+// export function About({ isDark }: AboutProps) {
+//   const [activeFile, setActiveFile] = useState<FileKey>("identity.tsx");
+//   const [isAvatarHovered, setIsAvatarHovered] = useState(false);
+
+//   // Auto-shift files every 8 seconds
+//   useEffect(() => {
+//     const fileKeys = Object.keys(FILES) as FileKey[];
+//     const interval = setInterval(() => {
+//       setActiveFile((current) => {
+//         const currentIndex = fileKeys.indexOf(current);
+//         const nextIndex = (currentIndex + 1) % fileKeys.length;
+//         return fileKeys[nextIndex];
+//       });
+//     }, 8000);
+
+//     return () => clearInterval(interval);
+//   }, [activeFile]); // Reset timer if user manually clicks a file
+
+//   return (
+//     <section className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-32 overflow-hidden bg-transparent">
+      
+//       {/* Background Atmosphere */}
+//       <div 
+//         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-5xl max-h-[600px] blur-[120px] rounded-full pointer-events-none"
+//         style={{ 
+//           background: isDark 
+//             ? `radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, rgba(16, 185, 129, 0.1) 50%, transparent 70%)`
+//             : `radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, rgba(16, 185, 129, 0.05) 50%, transparent 70%)`
+//         }}
+//       />
+
+//       <motion.div 
+//         initial={{ opacity: 0, y: 40 }}
+//         whileInView={{ opacity: 1, y: 0 }}
+//         viewport={{ once: true }}
+//         className="max-w-6xl w-full space-y-12"
+//       >
+//         {/* Header */}
+//         <div className="flex flex-col items-center space-y-4">
+//           <motion.div
+//             initial={{ opacity: 0, y: 20 }}
+//             whileInView={{ opacity: 1, y: 0 }}
+//             viewport={{ once: true }}
+//             className="flex items-center gap-2 px-3 py-1 rounded-full border border-cyan-500/20 bg-cyan-500/5 text-[10px] font-mono uppercase tracking-[0.2em] text-cyan-400"
+//           >
+//             <Sparkles size={12} />
+//             <span>System Information</span>
+//           </motion.div>
+//           <h2 className="text-5xl md:text-7xl font-bold tracking-tighter text-center text-white">
+//             About <span className="bg-linear-to-r from-cyan-400 to-emerald-500 bg-clip-text text-transparent">Me</span>
+//           </h2>
+//         </div>
+
+//         {/* IDE WINDOW */}
+//         <div 
+//           className={`w-full rounded-xl border overflow-hidden backdrop-blur-xl flex flex-col h-[600px] shadow-2xl transition-colors duration-500`}
+//           style={{ 
+//             backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)',
+//             borderColor: isDark ? 'rgba(6, 182, 212, 0.2)' : 'rgba(6, 182, 212, 0.1)'
+//           }}
+//         >
+          
+//           {/* 1. TITLE BAR (Mac Style) */}
+//           <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 bg-black/20">
+//             <div className="flex gap-2">
+//               <div className="w-3 h-3 rounded-full bg-red-500/50" />
+//               <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
+//               <div className="w-3 h-3 rounded-full bg-emerald-500/50" />
+//             </div>
+//             <div className="flex items-center gap-2 text-[10px] font-mono text-cyan-400/60 uppercase tracking-widest">
+//               <Terminal size={12} />
+//               <span>src / core / {activeFile} — Visual Studio Code</span>
+//             </div>
+//             <div className="w-10" /> {/* Spacer */}
+//           </div>
+
+//           <div className="flex flex-1 overflow-hidden">
+            
+//             {/* 2. SIDEBAR (The Explorer) */}
+//             <div className="w-12 md:w-56 border-r border-white/5 bg-black/10 hidden md:flex flex-col">
+//               <div className="p-3 text-[10px] uppercase tracking-wider text-cyan-400/40 font-bold flex items-center justify-between">
+//                 <span>Explorer</span>
+//                 <Files size={12} />
+//               </div>
+//               <div className="flex-1">
+//                 <div className="flex items-center gap-2 px-4 py-2 text-cyan-400/60 text-xs">
+//                   <ChevronRight size={14} />
+//                   <Folder size={14} />
+//                   <span className="font-semibold">PORTFOLIO</span>
+//                 </div>
+//                 {Object.keys(FILES).map((fileName) => (
+//                   <button
+//                     key={fileName}
+//                     onClick={() => setActiveFile(fileName as FileKey)}
+//                     className={`w-full flex items-center gap-2 px-8 py-2 text-xs transition-all hover:bg-cyan-500/5 ${
+//                       activeFile === fileName ? "bg-cyan-500/10 text-cyan-400" : "text-white/20"
+//                     }`}
+//                   >
+//                     {FILES[fileName as FileKey].icon}
+//                     <span>{fileName}</span>
+//                   </button>
+//                 ))}
+//               </div>
+
+//               {/* Mini Avatar in Sidebar */}
+//               <div className="p-4 border-t border-white/5">
+//                 <div 
+//                   className="relative aspect-square rounded-lg overflow-hidden border border-white/10 group cursor-crosshair"
+//                   onMouseEnter={() => setIsAvatarHovered(true)}
+//                   onMouseLeave={() => setIsAvatarHovered(false)}
+//                 >
+//                   <div className={`absolute inset-0 bg-[url('/textures/texture1.png')] bg-cover bg-center grayscale transition-all duration-500 ${isAvatarHovered ? 'opacity-0 scale-110 blur-sm' : 'opacity-40 scale-100'}`} />
+//                   <MatrixRain isHovered={isAvatarHovered} />
+//                   <div className={`absolute inset-0 bg-[url('/textures/texture1.png')] bg-cover bg-center transition-all duration-700 ${isAvatarHovered ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`} />
+//                   <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
+//                   <div className="absolute bottom-2 left-2 flex items-center gap-1.5">
+//                     <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${isAvatarHovered ? 'bg-cyan-400' : 'bg-emerald-500'}`} />
+//                     <span className="text-[8px] font-mono text-white/40 uppercase tracking-tighter">
+//                       {isAvatarHovered ? 'Decoding' : 'Encrypted'}
+//                     </span>
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+
+//             {/* 3. EDITOR AREA */}
+//             <div className="flex-1 flex flex-col overflow-hidden">
+              
+//               {/* TABS */}
+//               <div className="flex bg-black/20 border-b border-white/5 overflow-x-auto no-scrollbar">
+//                 {Object.keys(FILES).map((fileName) => (
+//                   <div
+//                     key={fileName}
+//                     onClick={() => setActiveFile(fileName as FileKey)}
+//                     className={`relative flex items-center gap-2 px-4 py-2 text-xs cursor-pointer border-r border-white/5 min-w-[120px] transition-all ${
+//                       activeFile === fileName 
+//                         ? "bg-black/40 text-cyan-400" 
+//                         : "bg-black/20 text-white/20 hover:bg-black/40"
+//                     }`}
+//                   >
+//                     {FILES[fileName as FileKey].icon}
+//                     <span>{fileName}</span>
+                    
+//                     {/* Active Tab Indicator & Progress Bar */}
+//                     {activeFile === fileName && (
+//                       <>
+//                         <motion.div 
+//                           layoutId="activeTabBorder"
+//                           className="absolute top-0 left-0 right-0 h-[2px] bg-cyan-400" 
+//                         />
+//                         <motion.div 
+//                           initial={{ width: "0%" }}
+//                           animate={{ width: "100%" }}
+//                           transition={{ duration: 8, ease: "linear" }}
+//                           key={`progress-${fileName}`}
+//                           className="absolute bottom-0 left-0 h-[1px] bg-cyan-400/30"
+//                         />
+//                       </>
+//                     )}
+//                   </div>
+//                 ))}
+//               </div>
+
+//               {/* CODE EDITOR */}
+//               <div className="flex-1 overflow-y-auto overflow-x-hidden p-6 font-mono text-sm relative bg-black/5 no-scrollbar">
+//                 <AnimatePresence mode="wait">
+//                   <motion.div
+//                     key={activeFile}
+//                     initial={{ opacity: 0, x: 10 }}
+//                     animate={{ opacity: 1, x: 0 }}
+//                     exit={{ opacity: 0, x: -10 }}
+//                     transition={{ duration: 0.2 }}
+//                     className="flex"
+//                   >
+//                     {/* Line Numbers */}
+//                     <div className="pr-6 border-r border-white/5 text-white/10 text-right select-none min-w-[45px]">
+//                       {FILES[activeFile].content.split("\n").map((_, i) => (
+//                         <div key={i} className="h-6 leading-6">{i + 1}</div>
+//                       ))}
+//                     </div>
+                    
+//                     {/* Code Content */}
+//                     <pre className="pl-6 text-white/80 whitespace-pre-wrap leading-6">
+//                       {FILES[activeFile].content.split('\n').map((line, i) => (
+//                         <div key={i} className="group flex">
+//                           <span className="transition-colors group-hover:text-cyan-400">
+//                             {line}
+//                           </span>
+//                         </div>
+//                       ))}
+//                     </pre>
+//                   </motion.div>
+//                 </AnimatePresence>
+                
+//                 {/* Visual Glow in the Editor corner */}
+//                 <div className="absolute bottom-8 right-8 text-cyan-400/5 rotate-12 pointer-events-none">
+//                   <Code size={160} />
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* 4. STATUS BAR */}
+//           <div className="bg-linear-to-r from-cyan-600 to-emerald-600 px-4 py-1.5 flex items-center justify-between text-[10px] text-white font-mono">
+//             <div className="flex items-center gap-4">
+//               <div className="flex items-center gap-1.5 hover:bg-white/10 px-2 py-0.5 rounded transition-colors cursor-pointer">
+//                 <Terminal size={12} />
+//                 <span>main*</span>
+//               </div>
+//               <div className="flex items-center gap-1.5">
+//                 <div className="flex items-center gap-1">
+//                   <div className="w-2 h-2 rounded-full bg-white/20 flex items-center justify-center">
+//                     <div className="w-1 h-1 rounded-full bg-white" />
+//                   </div>
+//                   <span>0</span>
+//                 </div>
+//                 <span className="opacity-60">Errors</span>
+//               </div>
+//             </div>
+//             <div className="flex items-center gap-4 uppercase tracking-tighter">
+//               <div className="flex items-center gap-4 opacity-80">
+//                 <span>UTF-8</span>
+//                 <span>TypeScript JSX</span>
+//               </div>
+//               <div className="flex items-center gap-1.5 bg-white/10 px-2 py-0.5 rounded">
+//                 <Sparkles size={12} />
+//                 <span>Copilot</span>
+//               </div>
+//             </div>
+//           </div>
+
+//         </div>
+//       </motion.div>
+//     </section>
+//   );
+// }
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { THEME } from "@/config";
-import { Terminal as TerminalIcon, Cpu, GraduationCap, Compass, Sparkles, X, Github, Linkedin, Mail } from "lucide-react";
+import { 
+  Cpu, 
+  Zap, 
+  Target, 
+  Layers, 
+  Fingerprint, 
+  Activity,
+  Maximize2,
+  GitBranch,
+  Search
+} from "lucide-react";
 
 interface AboutProps {
   isDark: boolean;
 }
 
-const PILLARS = [
+// 1. Define the "Core Modules" (Instead of files)
+const MODULES = [
   {
-    id: "architect",
+    id: "core",
+    label: "Kernel_Identity",
+    icon: <Fingerprint size={18} />,
     title: "The Architect",
-    filename: "architect.ts",
-    icon: Cpu,
-    code: `class Architect {
-  specialization = "Scalable Systems";
-  focus = ["Performance", "Clean Code"];
-  
-  build() {
-    return "Software that breathes";
-  }
-}`,
-    description: "I specialize in building scalable backend systems and interactive frontend experiences. My focus is on the intersection of performance and clean code.",
-    color: "rgb(16, 185, 129)" // Emerald
+    desc: "A developer specializing in high-concurrency systems and fluid digital aesthetics. I treat code as a living ecosystem.",
+    stats: { "Uptime": "5+ Years", "Efficiency": "99.9%", "Role": "Full-Stack" }
   },
   {
-    id: "student",
-    title: "The Student",
-    filename: "student.rs",
-    icon: GraduationCap,
-    code: `struct Student {
-  major: "Computer Science",
-  philosophy: "Continuous Experimentation",
-  
-  fn study(system: System) {
-    system.deconstruct().optimize();
-  }
-}`,
-    description: "Currently a CS Major, I treat every project as an experiment in efficiency. I don't just write code; I study systems.",
-    color: "rgb(56, 189, 248)" // Sky
+    id: "stack",
+    label: "Neural_Stack",
+    icon: <Layers size={18} />,
+    title: "Technical Matrix",
+    desc: "Mastery of the modern web stack with a focus on type-safety and performance engineering.",
+    stats: { "Languages": "TS, Rust, Go", "Frontend": "Next.js", "Backend": "Node/Postgres" }
   },
   {
-    id: "explorer",
-    title: "The Explorer",
-    filename: "explorer.js",
-    icon: Compass,
-    code: `const explorer = {
-  inspiration: "Nature's Complexity",
-  hobbies: ["Outdoors", "Digital Gardening"],
-  
-  explore: () => "Beyond the terminal"
-};`,
-    description: "When I'm not in the terminal, I'm likely exploring the outdoors or researching digital gardening. I believe great engineering is inspired by nature.",
-    color: "rgb(168, 85, 247)" // Purple
+    id: "mission",
+    label: "Logic_Path",
+    icon: <Target size={18} />,
+    title: "Strategic Vision",
+    desc: "Bridging the gap between retro-visual nostalgia and cutting-edge system performance.",
+    stats: { "Vision": "Creative Tech", "Method": "Agile/Clean", "Goal": "Scalability" }
   }
 ];
 
-const TerminalCarousel = ({ isDark, activeId, setActiveId }: { isDark: boolean, activeId: string, setActiveId: (id: string) => void }) => {
-  const currentIndex = PILLARS.findIndex(p => p.id === activeId);
+export function About({ isDark }: AboutProps) {
+  const [activeModule, setActiveModule] = useState(MODULES[0]);
+  const [isScanning, setIsScanning] = useState(false);
 
   return (
-    <div className="w-full lg:w-1/2 relative group">
-      <div className="relative h-112.5 w-full flex items-center justify-center">
-        {PILLARS.map((pillar, index) => {
-          // Calculate relative position in the stack (0 is front, 1 is middle, 2 is back)
-          const position = (index - currentIndex + PILLARS.length) % PILLARS.length;
-          
-          return (
-            <motion.div 
-              key={pillar.id}
-              animate={{
-                scale: 1 - position * 0.05,
-                y: position * -15,
-                zIndex: PILLARS.length - position,
-                opacity: 1 - position * 0.4,
-                filter: position > 0 ? "blur(4px)" : "blur(0px)",
-              }}
-              transition={{ 
-                type: "spring", 
-                damping: 25, 
-                stiffness: 120,
-                opacity: { duration: 0.2 }
-              }}
-              className="absolute inset-0 rounded-xl border overflow-hidden backdrop-blur-xl shadow-2xl flex flex-col"
-              style={{ 
-                backgroundColor: isDark ? "rgba(2, 13, 6, 0.6)" : "rgba(248, 250, 245, 0.6)",
-                borderColor: isDark ? "rgba(16, 185, 129, 0.2)" : "rgba(16, 185, 129, 0.1)",
-                pointerEvents: position === 0 ? "auto" : "none"
-              }}
+    <section className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-24 overflow-hidden">
+      
+      {/* Background Grid - Industrial/Technical Vibe */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
+           style={{ backgroundImage: `radial-gradient(${isDark ? '#fff' : '#000'} 1px, transparent 1px)`, backgroundSize: '30px 30px' }} />
+
+      <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-12 gap-8 relative">
+        
+        {/* --- LEFT COLUMN: NAVIGATION NODES --- */}
+        <div className="lg:col-span-3 flex flex-col gap-4 justify-center order-2 lg:order-1">
+          {MODULES.map((mod) => (
+            <button
+              key={mod.id}
+              onClick={() => setActiveModule(mod)}
+              className={`relative group p-4 rounded-lg border transition-all duration-500 text-left overflow-hidden ${
+                activeModule.id === mod.id 
+                ? "border-cyan-500 bg-cyan-500/10 text-cyan-400" 
+                : "border-white/5 bg-white/5 text-white/40 hover:border-white/20"
+              }`}
             >
-              {/* VS Code Header */}
-              <div className="flex flex-col border-b border-white/5">
-                {/* Title Bar */}
-                <div className="flex items-center justify-between px-4 py-2 bg-black/20">
-                  <div className="flex gap-1.5">
-                    <div className="w-3 h-3 rounded-full bg-[#ff5f56]" />
-                    <div className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
-                    <div className="w-3 h-3 rounded-full bg-[#27c93f]" />
-                  </div>
-                  <div className="text-[10px] font-mono opacity-40 uppercase tracking-widest">
-                    Visual Studio Code — {pillar.filename}
-                  </div>
-                  <div className="w-12" /> {/* Spacer */}
+              <div className="flex items-center gap-3 relative z-10">
+                <div className={`transition-transform duration-500 ${activeModule.id === mod.id ? 'scale-110 rotate-[360deg]' : ''}`}>
+                  {mod.icon}
                 </div>
-
-                {/* Tab Bar */}
-                <div className="flex bg-black/40 overflow-x-auto no-scrollbar">
-                  {PILLARS.map((p) => (
-                    <div
-                      key={p.id}
-                      onClick={() => position === 0 && setActiveId(p.id)}
-                      className={`group flex items-center gap-2 px-4 py-2 text-xs font-mono cursor-pointer border-r border-white/5 transition-colors ${
-                        p.id === pillar.id 
-                          ? "bg-[#1e1e1e] text-white border-t-2 border-t-emerald-500" 
-                          : "text-white/40 hover:bg-white/5"
-                      }`}
-                      style={{ 
-                        borderTopColor: p.id === pillar.id ? p.color : "transparent",
-                        minWidth: "140px"
-                      }}
-                    >
-                      <p.icon size={14} style={{ color: p.color }} />
-                      <span className="flex-1 truncate">{p.filename}</span>
-                      <div className="flex items-center justify-center w-4 h-4 rounded hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <X size={10} />
-                      </div>
-                      {p.id === pillar.id && (
-                        <div className="w-2 h-2 rounded-full bg-white/20" />
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Breadcrumbs */}
-                <div className="flex items-center gap-2 px-4 py-1 bg-[#1e1e1e] text-[10px] font-mono text-white/40">
-                  <span>src</span>
-                  <span>›</span>
-                  <span>pillars</span>
-                  <span>›</span>
-                  <span className="text-white/60">{pillar.filename}</span>
-                </div>
+                <span className="text-[10px] font-mono uppercase tracking-[0.2em]">{mod.label}</span>
               </div>
-
-              {/* Editor Content */}
-              <div className="flex-1 flex overflow-hidden">
-                {/* VS Code Activity Bar (Left) */}
-                <div className="w-12 bg-black/20 border-r border-white/5 flex flex-col items-center py-4 gap-4">
-                  {PILLARS.map((p) => (
-                    <div 
-                      key={p.id}
-                      className={`p-2 rounded-md transition-colors ${p.id === activeId ? 'text-white bg-white/10' : 'text-white/20 hover:text-white/40'}`}
-                    >
-                      <p.icon size={18} />
-                    </div>
-                  ))}
-                </div>
-
-                <div className="flex-1 flex flex-col relative overflow-hidden">
-                  {/* Line Numbers */}
-                  <div className="absolute left-0 top-0 bottom-0 w-12 bg-black/10 flex flex-col items-center py-8 text-white/10 select-none">
-                    {[...Array(10)].map((_, i) => (
-                      <div key={i} className="h-6 leading-relaxed">{i + 1}</div>
-                    ))}
-                  </div>
-
-                  <div className="pl-12 p-8 flex-1">
-                    <div className="flex items-center gap-3 mb-6">
-                      <pillar.icon size={24} style={{ color: pillar.color }} />
-                      <span className="text-xl font-bold uppercase tracking-tighter">{pillar.title}</span>
-                    </div>
-                    <pre className="text-[13px] leading-relaxed overflow-x-auto p-4 rounded bg-black/20 border border-white/5">
-                      <code style={{ color: pillar.color }}>
-                        {pillar.code}
-                      </code>
-                    </pre>
-                  </div>
-                </div>
-              </div>
-
-              {/* VS Code Status Bar */}
-              <div className="h-6 bg-emerald-600 flex items-center justify-between px-3 text-[10px] text-white font-mono" style={{ backgroundColor: pillar.color }}>
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 flex items-center justify-center">
-                      <div className="w-1.5 h-1.5 rounded-full bg-white" />
-                    </div>
-                    <span>Main*</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <X size={10} />
-                    <span>0 Errors</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <span>UTF-8</span>
-                  <span>TypeScript</span>
-                  <div className="flex items-center gap-1">
-                    <Sparkles size={10} />
-                    <span>Copilot</span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
-
-const Garden = ({ isDark, activeId }: { isDark: boolean, activeId: string }) => {
-  const activePillar = PILLARS.find(p => p.id === activeId) || PILLARS[0];
-
-  return (
-    <div className="w-full lg:w-1/2 relative min-h-120 flex items-center justify-center">
-      {/* Profile / Identity Frame */}
-      <div className="relative w-full max-w-md aspect-4/5 group">
-        {/* Background Decorative Elements */}
-        <motion.div 
-          animate={{ 
-            backgroundColor: activePillar.color,
-            opacity: [0.05, 0.1, 0.05],
-            scale: [1, 1.05, 1]
-          }}
-          transition={{ duration: 4, repeat: Infinity }}
-          className="absolute inset-0 rounded-3xl blur-3xl -z-10"
-        />
-
-        {/* Main Frame */}
-        <div 
-          className="absolute inset-0 rounded-2xl border backdrop-blur-xl overflow-hidden flex flex-col shadow-2xl"
-          style={{ 
-            backgroundColor: isDark ? "rgba(2, 13, 6, 0.4)" : "rgba(248, 250, 245, 0.4)",
-            borderColor: `${activePillar.color}33`
-          }}
-        >
-          {/* Background Data Stream */}
-          <div className="absolute inset-0 opacity-[0.03] pointer-events-none overflow-hidden font-mono text-[8px] leading-none flex flex-wrap gap-1 p-2">
-            {Array.from({ length: 20 }).map((_, i) => (
-              <motion.div
-                key={i}
-                animate={{ y: [0, 20, 0], opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 2 + Math.random() * 2, repeat: Infinity }}
-              >
-                {Math.random().toString(16).slice(2, 10)}
-              </motion.div>
-            ))}
+              {/* Pulse effect for active node */}
+              {activeModule.id === mod.id && (
+                <motion.div layoutId="nodePulse" className="absolute inset-0 bg-cyan-400/5 animate-pulse" />
+              )}
+            </button>
+          ))}
+          
+          {/* Technical Readout Spacer */}
+          <div className="mt-8 p-4 border-l-2 border-dashed border-white/10 hidden lg:block">
+            <p className="text-[9px] font-mono text-white/20 leading-relaxed uppercase tracking-tighter">
+              [SYSTEM_CHECK]: OK<br/>
+              [LATENCY]: 12ms<br/>
+              [ARCHITECTURE]: MODULAR<br/>
+              [STATUS]: SCANNING_FOR_TALENT
+            </p>
           </div>
+        </div>
 
-          {/* Frame Header */}
-          <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between bg-white/5">
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: activePillar.color }} />
-                <div className="absolute inset-0 w-2 h-2 rounded-full animate-ping opacity-50" style={{ backgroundColor: activePillar.color }} />
-              </div>
-              <span className="text-[10px] font-mono uppercase tracking-[0.3em] opacity-60">Identity_Protocol.v1</span>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="text-[10px] font-mono opacity-30">ID: 0x7F...{activeId.slice(0, 2).toUpperCase()}</div>
-              <div className="w-px h-3 bg-white/10" />
-              <div className="text-[10px] font-mono text-emerald-500/60">SECURE</div>
-            </div>
-          </div>
-
-          {/* Photo / Avatar Area */}
-          <div className="flex-1 relative p-8 flex flex-col items-center justify-center gap-8">
-            <div className="relative w-48 h-48">
-              {/* Corner Accents */}
-              {[0, 90, 180, 270].map((rot) => (
-                <div 
-                  key={rot}
-                  className="absolute w-6 h-6 border-t-2 border-l-2"
-                  style={{ 
-                    transform: `rotate(${rot}deg)`,
-                    borderColor: activePillar.color,
-                    top: rot < 180 ? "-4px" : "auto",
-                    bottom: rot >= 180 ? "-4px" : "auto",
-                    left: (rot === 0 || rot === 270) ? "-4px" : "auto",
-                    right: (rot === 90 || rot === 180) ? "-4px" : "auto",
-                  }}
-                />
-              ))}
-
-              {/* Image Placeholder / Avatar */}
-              <div className="w-full h-full rounded-lg overflow-hidden bg-black/20 border border-white/5 flex items-center justify-center relative group/img">
-                <motion.div
-                  key={activeId}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="flex flex-col items-center gap-2"
-                >
-                  <div className="relative">
-                    <activePillar.icon size={48} style={{ color: activePillar.color }} className="opacity-20" />
-                    {/* Wireframe Overlay */}
-                    <div className="absolute inset-0 border border-white/5 rounded-full scale-150 opacity-10" />
-                    <div className="absolute inset-0 border border-white/5 rounded-full scale-125 opacity-20" />
-                  </div>
-                  <span className="text-[10px] font-mono opacity-20 uppercase tracking-widest">Identity_Pending</span>
-                </motion.div>
-                
-                {/* Scanning Effect with Glitch */}
+        {/* --- CENTER COLUMN: SCHEMATIC VISUAL --- */}
+        <div className="lg:col-span-5 flex items-center justify-center order-1 lg:order-2">
+          <div className="relative w-full aspect-square max-w-[400px]">
+            {/* Animated Rings */}
+            <div className="absolute inset-0 rounded-full border border-dashed border-cyan-500/20 animate-[spin_20s_linear_infinite]" />
+            <div className="absolute inset-2 rounded-full border border-emerald-500/10 animate-[spin_15s_linear_infinite_reverse]" />
+            
+            {/* The Iris / Scanner */}
+            <div 
+              className="absolute inset-12 rounded-2xl border border-white/10 overflow-hidden cursor-none group"
+              onMouseEnter={() => setIsScanning(true)}
+              onMouseLeave={() => setIsScanning(false)}
+            >
+              <div className={`absolute inset-0 bg-[url('/textures/texture1.png')] bg-cover bg-center transition-all duration-700 ${isScanning ? 'scale-110 grayscale-0' : 'grayscale brightness-50'}`} />
+              
+              {/* Scanning Line */}
+              {isScanning && (
                 <motion.div 
-                  animate={{ 
-                    top: ["0%", "100%", "0%"],
-                    opacity: [0.2, 0.5, 0.2],
-                    scaleX: [1, 1.1, 1]
-                  }}
-                  transition={{ 
-                    top: { duration: 4, repeat: Infinity, ease: "linear" },
-                    opacity: { duration: 0.2, repeat: Infinity },
-                    scaleX: { duration: 0.1, repeat: Infinity }
-                  }}
-                  className="absolute left-0 right-0 h-px bg-linear-to-r from-transparent via-current to-transparent z-10"
-                  style={{ color: activePillar.color }}
+                  initial={{ top: 0 }}
+                  animate={{ top: "100%" }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                  className="absolute left-0 right-0 h-[2px] bg-cyan-400 shadow-[0_0_15px_#22d3ee] z-20"
                 />
+              )}
 
-                {/* Corner Scan Markers */}
-                <div className="absolute top-2 left-2 w-2 h-2 border-t border-l border-white/20" />
-                <div className="absolute top-2 right-2 w-2 h-2 border-t border-r border-white/20" />
-                <div className="absolute bottom-2 left-2 w-2 h-2 border-b border-l border-white/20" />
-                <div className="absolute bottom-2 right-2 w-2 h-2 border-b border-r border-white/20" />
-              </div>
+              {/* Crosshairs */}
+              <div className="absolute top-2 left-2 text-cyan-400 opacity-40"><Maximize2 size={12}/></div>
+              <div className="absolute top-2 right-2 text-cyan-400 opacity-40 rotate-90"><Maximize2 size={12}/></div>
+              <div className="absolute bottom-2 left-2 text-cyan-400 opacity-40 -rotate-90"><Maximize2 size={12}/></div>
+              <div className="absolute bottom-2 right-2 text-cyan-400 opacity-40 rotate-180"><Maximize2 size={12}/></div>
             </div>
 
-            {/* System Stats / Metadata */}
-            <div className="w-full space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                {[
-                  { label: "Logic Level", value: "98.4%" },
-                  { label: "Neural Sync", value: "Active" },
-                  { label: "Uptime", value: "∞" },
-                  { label: "Status", value: "Optimized" }
-                ].map((stat, i) => (
-                  <div key={i} className="space-y-1">
-                    <div className="text-[9px] font-mono uppercase opacity-40 tracking-wider">{stat.label}</div>
-                    <div className="text-xs font-mono" style={{ color: activePillar.color }}>{stat.value}</div>
+            {/* Orbiting Data Tags */}
+            <div className="absolute top-0 right-0 p-2 border border-white/10 rounded backdrop-blur-md">
+                <p className="text-[8px] font-mono text-cyan-400">POS: 37.7749° N</p>
+            </div>
+            <div className="absolute bottom-0 left-0 p-2 border border-white/10 rounded backdrop-blur-md">
+                <p className="text-[8px] font-mono text-emerald-400">MTBF: 99.98%</p>
+            </div>
+          </div>
+        </div>
+
+        {/* --- RIGHT COLUMN: DATA DISPLAY --- */}
+        <div className="lg:col-span-4 flex flex-col justify-center order-3 space-y-8">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeModule.id}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-6"
+            >
+              <div className="space-y-2">
+                <h3 className="text-3xl font-bold text-white tracking-tighter">{activeModule.title}</h3>
+                <div className="h-1 w-12 bg-cyan-500" />
+              </div>
+
+              <p className="text-white/60 text-sm leading-relaxed font-light italic">
+                "{activeModule.desc}"
+              </p>
+
+              {/* Stat Grid */}
+              <div className="grid grid-cols-1 gap-4 pt-4">
+                {Object.entries(activeModule.stats).map(([label, value]) => (
+                  <div key={label} className="group flex flex-col p-3 rounded border border-white/5 bg-white/5 hover:border-cyan-500/30 transition-colors">
+                    <span className="text-[8px] font-mono text-cyan-400 uppercase tracking-widest mb-1">{label}</span>
+                    <span className="text-xs text-white/80 font-mono tracking-wider">{value}</span>
                   </div>
                 ))}
               </div>
+            </motion.div>
+          </AnimatePresence>
 
-              {/* Progress Bar */}
-              <div className="space-y-2">
-                <div className="flex justify-between text-[9px] font-mono uppercase opacity-40">
-                  <span>System Integration</span>
-                  <span>{activeId === 'architect' ? '92%' : activeId === 'student' ? '85%' : '78%'}</span>
-                </div>
-                <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
-                  <motion.div 
-                    key={activeId}
-                    initial={{ width: 0 }}
-                    animate={{ width: activeId === 'architect' ? '92%' : activeId === 'student' ? '85%' : '78%' }}
-                    className="h-full"
-                    style={{ backgroundColor: activePillar.color }}
-                  />
-                </div>
-              </div>
+          <div className="flex items-center gap-4 pt-8">
+            <button className="flex-1 py-3 text-[10px] font-mono uppercase tracking-[0.2em] border border-emerald-500/20 bg-emerald-500/5 text-emerald-400 hover:bg-emerald-500/10 transition-colors rounded">
+              Download_Spec.pdf
+            </button>
+            <div className="p-3 border border-white/10 rounded text-white/20">
+              <Search size={16} />
             </div>
           </div>
-
-          {/* Footer / Contact Blocks */}
-          <div className="p-6 bg-black/20 border-t border-white/5 grid grid-cols-3 gap-3">
-            {[
-              { label: "GITHUB", value: "github.com/your-handle", icon: Github, href: "#" },
-              { label: "LINKEDIN", value: "linkedin.com/in/your-profile", icon: Linkedin, href: "#" },
-              { label: "EMAIL", value: "hello@yourdomain.com", icon: Mail, href: "mailto:hello@yourdomain.com" }
-            ].map((link, i) => (
-              <motion.a
-                key={link.label}
-                href={link.href}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 + i * 0.1 }}
-                className="flex flex-col items-center justify-center gap-2 py-5 rounded-lg border border-white/5 hover:bg-white/5 transition-all group/link relative"
-                style={{ borderColor: `${activePillar.color}22` }}
-              >
-                {/* VS Code Style Hover Tooltip */}
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-max max-w-50 opacity-0 group-hover/link:opacity-100 pointer-events-none transition-all duration-200 translate-y-2 group-hover/link:translate-y-0 z-50">
-                  <div className="bg-[#252526] border border-[#454545] shadow-xl rounded px-3 py-2 text-[10px] font-mono text-white/90 flex flex-col gap-1">
-                    <div className="flex items-center gap-2 border-b border-white/10 pb-1 mb-1">
-                      <link.icon size={10} style={{ color: activePillar.color }} />
-                      <span className="font-bold">{link.label}</span>
-                    </div>
-                    <div className="text-white/50 break-all">{link.value}</div>
-                    <div className="text-[8px] text-emerald-500/50 mt-1 italic">Click to open link</div>
-                  </div>
-                  {/* Tooltip Arrow */}
-                  <div className="w-2 h-2 bg-[#252526] border-r border-b border-[#454545] rotate-45 absolute -bottom-1 left-1/2 -translate-x-1/2" />
-                </div>
-
-                {/* Hover Glow */}
-                <div 
-                  className="absolute inset-0 opacity-0 group-hover/link:opacity-10 transition-opacity pointer-events-none rounded-lg"
-                  style={{ backgroundColor: activePillar.color }}
-                />
-                
-                <link.icon size={20} className="opacity-40 group-hover/link:opacity-100 transition-all group-hover/link:scale-110" style={{ color: activePillar.color }} />
-                <span className="text-[9px] font-mono opacity-30 group-hover/link:opacity-80 tracking-[0.2em]">{link.label}</span>
-                
-                {/* Corner Accent */}
-                <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-white/20 rounded-tr-lg" />
-              </motion.a>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export function About({ isDark }: AboutProps) {
-  const [activeId, setActiveId] = useState("architect");
-
-  return (
-    <section className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-32 overflow-hidden">
-      {/* Background Glow */}
-      <div 
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-200 h-200 rounded-full blur-[120px] opacity-10 pointer-events-none"
-        style={{ 
-          background: isDark 
-            ? `radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, transparent 70%)`
-            : `radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%)`
-        }}
-      />
-
-      <div className="max-w-7xl w-full space-y-20 relative z-10">
-        {/* Header */}
-        <div className="flex flex-col items-center text-center space-y-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/5 text-[10px] font-mono uppercase tracking-[0.2em] text-emerald-500"
-          >
-            <Sparkles size={12} />
-            <span>Rooted in Logic</span>
-          </motion.div>
-          <h2 
-            className="text-5xl md:text-7xl font-bold tracking-tighter"
-            style={{ color: isDark ? THEME.dark.foreground : THEME.light.foreground }}
-          >
-            The Terminal Garden
-          </h2>
         </div>
 
-        {/* Main Content: Split Screen */}
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
-          <TerminalCarousel isDark={isDark} activeId={activeId} setActiveId={setActiveId} />
-          <Garden isDark={isDark} activeId={activeId} />
-        </div>
       </div>
     </section>
   );

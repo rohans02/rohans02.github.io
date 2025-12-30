@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, Variants, AnimatePresence } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { BioluminescentCanvas } from "@/components/canvas/bioluminescent-canvas";
 import { Button, ThemeToggle, LoadingScreen, FloatingDock } from "@/components/ui";
-import { About } from "@/components/sections";
+import { About } from "@/components/sections/about";
 import { HERO_WORDS, THEME } from "@/config";
 
 const containerVariants: Variants = {
