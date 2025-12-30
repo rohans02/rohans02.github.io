@@ -20,6 +20,15 @@ html {
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
+/* Exclude loading screen from global transitions to prevent animation conflicts */
+[class*="z-[100]"] *,
+#ghost,
+#ghost *,
+#red,
+#red * {
+  transition: none !important;
+}
+
 :root {
   /* Sunlit Mist - Light Mode */
   --background: #F8FAF5; /* Warm off-white */

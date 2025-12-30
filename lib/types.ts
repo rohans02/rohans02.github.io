@@ -8,6 +8,8 @@ export interface Particle {
   size: number;
   color: string;
   baseBrightness: number;
+  homeX: number;  // Original/target position for this section
+  homeY: number;
 }
 
 export interface MousePosition {
@@ -18,4 +20,5 @@ export interface MousePosition {
 export interface BioluminescentCanvasProps {
   isDark: boolean;
   scrollProgress?: number;
+  activeSection?: 'hero' | 'about' | 'projects' | 'contact';
 }

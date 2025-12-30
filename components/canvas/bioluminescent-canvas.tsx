@@ -4,19 +4,98 @@ import { useEffect, useRef } from "react";
 import { Particle, BioluminescentCanvasProps } from "@/lib/types";
 import { THEME } from "@/config/theme";
 
-export function BioluminescentCanvas({ isDark, scrollProgress = 0 }: BioluminescentCanvasProps) {
+// Texture paths for each section
+const SECTION_TEXTURES: Record<string, string> = {
+  hero: "/textures/spider-web.jpeg",
+  about: "/textures/about-frame.jpg",
+};
+
+export function BioluminescentCanvas({ isDark, scrollProgress = 0, activeSection = 'hero' }: BioluminescentCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
   const mouseRef = useRef({ x: -1000, y: -1000 });
   const animationRef = useRef<number | null>(null);
-  const textBoundingBoxRef = useRef<DOMRect | null>(null);
-  const imageLoadedRef = useRef<HTMLImageElement | null>(null);
+  const texturesRef = useRef<Record<string, HTMLImageElement>>({});
   const scrollProgressRef = useRef(0);
+  const activeSectionRef = useRef<string>(activeSection);
+  const transitionProgressRef = useRef(1); // 0 = transitioning, 1 = complete
 
   // Keep ref in sync for the animation loop
   useEffect(() => {
     scrollProgressRef.current = scrollProgress;
   }, [scrollProgress]);
+
+  // Helper function to set positions from a texture
+  const setPositionsFromTexture = (canvas: HTMLCanvasElement, particles: Particle[], texture: HTMLImageElement) => {
+    if (!texture || canvas.width === 0) return;
+
+    const offscreen = document.createElement("canvas");
+    const offCtx = offscreen.getContext("2d");
+    if (!offCtx) return;
+
+    offscreen.width = canvas.width;
+    offscreen.height = canvas.height;
+
+    const iRatio = texture.width / texture.height;
+    const cRatio = canvas.width / canvas.height;
+    let drawW, drawH, drawX, drawY;
+    if (cRatio > iRatio) {
+      drawW = canvas.width;
+      drawH = canvas.width / iRatio;
+      drawX = 0;
+      drawY = (canvas.height - drawH) / 2;
+    } else {
+      drawH = canvas.height;
+      drawW = canvas.height * iRatio;
+      drawY = 0;
+      drawX = (canvas.width - drawW) / 2;
+    }
+
+    offCtx.drawImage(texture, drawX, drawY, drawW, drawH);
+    const imageData = offCtx.getImageData(0, 0, canvas.width, canvas.height).data;
+
+    const darkPixels: { x: number; y: number }[] = [];
+    const step = 4;
+    for (let y = 0; y < canvas.height; y += step) {
+      for (let x = 0; x < canvas.width; x += step) {
+        const index = (y * canvas.width + x) * 4;
+        const brightness = (imageData[index] + imageData[index + 1] + imageData[index + 2]) / 3;
+        if (brightness < 150) {
+          darkPixels.push({ x, y });
+        }
+      }
+    }
+
+    if (darkPixels.length > 0) {
+      particles.forEach((particle) => {
+        const pixel = darkPixels[Math.floor(Math.random() * darkPixels.length)];
+        particle.homeX = pixel.x + (Math.random() - 0.5) * step;
+        particle.homeY = pixel.y + (Math.random() - 0.5) * step;
+      });
+    }
+  };
+
+  // Helper function to update home positions based on section
+  const updateHomePositions = (canvas: HTMLCanvasElement, section: string) => {
+    const particles = particlesRef.current;
+    if (particles.length === 0) return;
+
+    const texture = texturesRef.current[section];
+    if (texture) {
+      setPositionsFromTexture(canvas, particles, texture);
+    }
+  };
+
+  // Reposition particles when section changes
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || activeSectionRef.current === activeSection) return;
+    
+    activeSectionRef.current = activeSection;
+    transitionProgressRef.current = 0; // Start transition
+    
+    updateHomePositions(canvas, activeSection);
+  }, [activeSection]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -29,21 +108,31 @@ export function BioluminescentCanvas({ isDark, scrollProgress = 0 }: Bioluminesc
       return window.innerWidth < 768 ? 80 : 750;
     };
 
-    const loadTexture = () => {
-      return new Promise<HTMLImageElement>((resolve, reject) => {
-        const img = new Image();
-        img.src = "/textures/spider-web.jpeg";
-        img.crossOrigin = "anonymous";
-        img.onload = () => {
-          imageLoadedRef.current = img;
-          resolve(img);
-        };
-        img.onerror = reject;
-      });
+    // Load all section textures
+    const loadAllTextures = async () => {
+      const entries = Object.entries(SECTION_TEXTURES);
+      const loaded: Record<string, HTMLImageElement> = {};
+      
+      await Promise.all(
+        entries.map(([section, src]) => {
+          return new Promise<void>((resolve) => {
+            const img = new Image();
+            img.src = src;
+            img.crossOrigin = "anonymous";
+            img.onload = () => {
+              loaded[section] = img;
+              resolve();
+            };
+            img.onerror = () => resolve(); // Continue even if one fails
+          });
+        })
+      );
+      
+      texturesRef.current = loaded;
+      return loaded.hero; // Return hero texture for initial particle setup
     };
 
-    const initializeParticles = (img?: HTMLImageElement) => {
-      const texture = img || imageLoadedRef.current;
+    const initializeParticles = (texture?: HTMLImageElement) => {
       const count = getParticleCount();
       const mode = isDark ? "dark" : "light";
       const colors = THEME[mode].particle.colors;
@@ -76,7 +165,7 @@ export function BioluminescentCanvas({ isDark, scrollProgress = 0 }: Bioluminesc
           offCtx.drawImage(texture, drawX, drawY, drawW, drawH);
           const imageData = offCtx.getImageData(0, 0, canvas.width, canvas.height).data;
 
-          const brightPixels: { x: number; y: number }[] = [];
+          const darkPixels: { x: number; y: number }[] = [];
           const step = 4;
           for (let y = 0; y < canvas.height; y += step) {
             for (let x = 0; x < canvas.width; x += step) {
@@ -87,22 +176,26 @@ export function BioluminescentCanvas({ isDark, scrollProgress = 0 }: Bioluminesc
               const brightness = (r + g + b) / 3;
 
               if (brightness < 150) {
-                brightPixels.push({ x, y });
+                darkPixels.push({ x, y });
               }
             }
           }
 
-          if (brightPixels.length > 0) {
+          if (darkPixels.length > 0) {
             particlesRef.current = Array.from({ length: count }, () => {
-              const pixel = brightPixels[Math.floor(Math.random() * brightPixels.length)];
+              const pixel = darkPixels[Math.floor(Math.random() * darkPixels.length)];
+              const x = pixel.x + (Math.random() - 0.5) * step;
+              const y = pixel.y + (Math.random() - 0.5) * step;
               return {
-                x: pixel.x + (Math.random() - 0.5) * step,
-                y: pixel.y + (Math.random() - 0.5) * step,
+                x,
+                y,
                 vx: (Math.random() - 0.5) * 0.5,
                 vy: (Math.random() - 0.5) * 0.5,
                 size: Math.random() * 1.8 + 1.0,
                 color: colors[Math.floor(Math.random() * colors.length)],
                 baseBrightness: Math.random() * 0.4 + 0.6,
+                homeX: x,
+                homeY: y,
               };
             });
             return;
@@ -110,45 +203,47 @@ export function BioluminescentCanvas({ isDark, scrollProgress = 0 }: Bioluminesc
         }
       }
 
-      // Fallback to random if image fails or no bright pixels found
-      particlesRef.current = Array.from({ length: count }, () => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        size: Math.random() * 1.8 + 1.0,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        baseBrightness: Math.random() * 0.4 + 0.6,
-      }));
+      // Fallback to random if image fails or no dark pixels found
+      particlesRef.current = Array.from({ length: count }, () => {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        return {
+          x,
+          y,
+          vx: (Math.random() - 0.5) * 0.5,
+          vy: (Math.random() - 0.5) * 0.5,
+          size: Math.random() * 1.8 + 1.0,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          baseBrightness: Math.random() * 0.4 + 0.6,
+          homeX: x,
+          homeY: y,
+        };
+      });
     };
 
-    const updateCanvasSize = () => {
+    const updateCanvasSize = (heroTexture?: HTMLImageElement) => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      initializeParticles();
+      initializeParticles(heroTexture);
     };
 
-    // Initial setup
-    loadTexture()
-      .then(() => {
-        updateCanvasSize();
+    const handleResize = () => updateCanvasSize(texturesRef.current.hero);
+
+    // Initial setup - load all textures then initialize
+    loadAllTextures()
+      .then((heroTexture) => {
+        updateCanvasSize(heroTexture);
       })
       .catch(() => {
         updateCanvasSize();
       });
 
-    window.addEventListener("resize", updateCanvasSize);
+    window.addEventListener("resize", handleResize);
 
     const handleMouseMove = (e: MouseEvent) => {
       mouseRef.current = { x: e.clientX, y: e.clientY };
     };
     window.addEventListener("mousemove", handleMouseMove);
-
-    const updateTextBoundingBox = () => {
-      const h1 = document.querySelector("h1");
-      if (h1) textBoundingBoxRef.current = h1.getBoundingClientRect();
-    };
-    updateTextBoundingBox();
 
     const animate = () => {
       // Draw background with trail effect
@@ -165,34 +260,11 @@ export function BioluminescentCanvas({ isDark, scrollProgress = 0 }: Bioluminesc
       const { x: mouseX, y: mouseY } = mouseRef.current;
       const repulsionRadius = 180;
       
-      // 1. Draw "Neural Connections" (The Logic)
-      // Only start connecting as we scroll down
-      if (progress > 0.05) {
-        const connectionDist = 100 * progress;
-        const maxOpacity = 0.15 * progress;
-        const color = isDark ? THEME.dark.particle.colors[0] : THEME.light.particle.colors[0];
-
-        ctx.beginPath();
-        ctx.lineWidth = 0.5;
-        
-        // Optimization: Only check a subset of particles for connections to keep 60fps
-        for (let i = 0; i < particles.length; i += 2) {
-          for (let j = i + 2; j < particles.length; j += 15) {
-            const dx = particles[i].x - particles[j].x;
-            const dy = particles[i].y - particles[j].y;
-            const distSq = dx * dx + dy * dy;
-
-            if (distSq < connectionDist * connectionDist) {
-              const dist = Math.sqrt(distSq);
-              const opacity = (1 - dist / connectionDist) * maxOpacity;
-              ctx.strokeStyle = `rgba(${color}, ${opacity})`;
-              ctx.moveTo(particles[i].x, particles[i].y);
-              ctx.lineTo(particles[j].x, particles[j].y);
-            }
-          }
-        }
-        ctx.stroke();
+      // Progress the transition (takes about 2 seconds at 60fps)
+      if (transitionProgressRef.current < 1) {
+        transitionProgressRef.current = Math.min(1, transitionProgressRef.current + 0.008);
       }
+      const isTransitioning = transitionProgressRef.current < 1;
       
       // Particle composite mode
       ctx.globalCompositeOperation = isDark ? "screen" : "source-over";
@@ -202,6 +274,7 @@ export function BioluminescentCanvas({ isDark, scrollProgress = 0 }: Bioluminesc
         const dy = particle.y - mouseY;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
+        // Mouse repulsion
         if (distance < repulsionRadius) {
           const force = (repulsionRadius - distance) / repulsionRadius;
           const angle = Math.atan2(dy, dx);
@@ -209,13 +282,30 @@ export function BioluminescentCanvas({ isDark, scrollProgress = 0 }: Bioluminesc
           particle.vy += Math.sin(angle) * force * 0.6;
         }
 
-        // "The Descent" effect: particles slow down and become more stable
-        const friction = 0.96 - (progress * 0.05); 
+        // Smooth pull toward home position - stronger during transition
+        const homeDx = particle.homeX - particle.x;
+        const homeDy = particle.homeY - particle.y;
+        const homeDist = Math.sqrt(homeDx * homeDx + homeDy * homeDy);
+        
+        // During transition: strong pull. After: gentle drift back
+        const pullStrength = isTransitioning ? 0.04 : 0.005;
+        
+        if (homeDist > 2) {
+          particle.vx += (homeDx / homeDist) * pullStrength * Math.min(homeDist, 100);
+          particle.vy += (homeDy / homeDist) * pullStrength * Math.min(homeDist, 100);
+        }
+
+        // Friction - particles slow down more during transition for smoother movement
+        const baseFriction = isTransitioning ? 0.92 : 0.96;
+        const friction = baseFriction - (progress * 0.05);
 
         particle.vx *= friction;
         particle.vy *= friction;
-        particle.vx += (Math.random() - 0.5) * 0.02;
-        particle.vy += (Math.random() - 0.5) * 0.02;
+        
+        // Small random movement for organic feel (reduced during transition)
+        const randomStrength = isTransitioning ? 0.005 : 0.02;
+        particle.vx += (Math.random() - 0.5) * randomStrength;
+        particle.vy += (Math.random() - 0.5) * randomStrength;
 
         particle.x += particle.vx;
         particle.y += particle.vy;
@@ -225,17 +315,15 @@ export function BioluminescentCanvas({ isDark, scrollProgress = 0 }: Bioluminesc
         if (particle.y < 0) particle.y = canvas.height;
         if (particle.y > canvas.height) particle.y = 0;
 
+        // Illumination - brighten particles near center of viewport
         let illumination = 1;
-        if (textBoundingBoxRef.current) {
-          const box = textBoundingBoxRef.current;
-          if (
-            particle.x > box.left - 50 &&
-            particle.x < box.right + 50 &&
-            particle.y > box.top - 50 &&
-            particle.y < box.bottom + 50
-          ) {
-            illumination = 1.8;
-          }
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const distToCenter = Math.sqrt((particle.x - centerX) ** 2 + (particle.y - centerY) ** 2);
+        const illuminationRadius = Math.min(canvas.width, canvas.height) * 0.4;
+        
+        if (distToCenter < illuminationRadius) {
+          illumination = 1 + (1 - distToCenter / illuminationRadius) * 0.8;
         }
 
         // Dark mode: 0.8 opacity for glowing fireflies
@@ -275,7 +363,7 @@ export function BioluminescentCanvas({ isDark, scrollProgress = 0 }: Bioluminesc
     animationRef.current = requestAnimationFrame(animate);
 
     return () => {
-      window.removeEventListener("resize", updateCanvasSize);
+      window.removeEventListener("resize", handleResize);
       window.removeEventListener("mousemove", handleMouseMove);
       if (animationRef.current) cancelAnimationFrame(animationRef.current);
     };
