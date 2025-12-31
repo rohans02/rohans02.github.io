@@ -260,55 +260,57 @@ export function BioluminescentCanvas({ isDark, scrollProgress = 0, activeSection
       const { x: mouseX, y: mouseY } = mouseRef.current;
       const repulsionRadius = 180;
       
-      // Progress the transition (takes about 2 seconds at 60fps)
+      // Fast transition - particles arrive quickly (~2 seconds)
       if (transitionProgressRef.current < 1) {
-        transitionProgressRef.current = Math.min(1, transitionProgressRef.current + 0.008);
+        transitionProgressRef.current = Math.min(1, transitionProgressRef.current + 0.01);
       }
       const isTransitioning = transitionProgressRef.current < 1;
+      
+      // Global time for oscillation effects
+      const time = Date.now() * 0.001;
       
       // Particle composite mode
       ctx.globalCompositeOperation = isDark ? "screen" : "source-over";
 
-      particles.forEach((particle) => {
+      particles.forEach((particle, index) => {
         const dx = particle.x - mouseX;
         const dy = particle.y - mouseY;
         const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // Distance to home
+        const homeDx = particle.homeX - particle.x;
+        const homeDy = particle.homeY - particle.y;
+        const homeDistance = Math.sqrt(homeDx * homeDx + homeDy * homeDy);
+        // Particle is "arrived" when close enough to home
+        const isNearHome = homeDistance < 20;
 
-        // Mouse repulsion
-        if (distance < repulsionRadius) {
+        // Mouse repulsion - works for particles that have arrived, even during transition
+        if (distance < repulsionRadius && (!isTransitioning || isNearHome)) {
           const force = (repulsionRadius - distance) / repulsionRadius;
           const angle = Math.atan2(dy, dx);
           particle.vx += Math.cos(angle) * force * 0.6;
           particle.vy += Math.sin(angle) * force * 0.6;
         }
 
-        // Smooth pull toward home position - stronger during transition
-        const homeDx = particle.homeX - particle.x;
-        const homeDy = particle.homeY - particle.y;
-        const homeDist = Math.sqrt(homeDx * homeDx + homeDy * homeDy);
-        
-        // During transition: strong pull. After: gentle drift back
-        const pullStrength = isTransitioning ? 0.04 : 0.005;
-        
-        if (homeDist > 2) {
-          particle.vx += (homeDx / homeDist) * pullStrength * Math.min(homeDist, 100);
-          particle.vy += (homeDy / homeDist) * pullStrength * Math.min(homeDist, 100);
+        // During transition: fast lerp to home, then immediately behave normally
+        if (isTransitioning && !isNearHome) {
+          // Strong lerp to get there fast
+          particle.x += homeDx * 0.08;
+          particle.y += homeDy * 0.08;
+        } else {
+          // Normal behavior - apply velocity
+          particle.x += particle.vx;
+          particle.y += particle.vy;
         }
 
-        // Friction - particles slow down more during transition for smoother movement
-        const baseFriction = isTransitioning ? 0.92 : 0.96;
-        const friction = baseFriction - (progress * 0.05);
-
+        // Friction
+        const friction = 0.96 - (progress * 0.05);
         particle.vx *= friction;
         particle.vy *= friction;
         
-        // Small random movement for organic feel (reduced during transition)
-        const randomStrength = isTransitioning ? 0.005 : 0.02;
-        particle.vx += (Math.random() - 0.5) * randomStrength;
-        particle.vy += (Math.random() - 0.5) * randomStrength;
-
-        particle.x += particle.vx;
-        particle.y += particle.vy;
+        // Random movement for organic floating feel
+        particle.vx += (Math.random() - 0.5) * 0.02;
+        particle.vy += (Math.random() - 0.5) * 0.02;
 
         if (particle.x < 0) particle.x = canvas.width;
         if (particle.x > canvas.width) particle.x = 0;
@@ -351,6 +353,7 @@ export function BioluminescentCanvas({ isDark, scrollProgress = 0, activeSection
           gradient.addColorStop(1, `rgba(${particle.color}, 0)`);
         }
 
+        // Draw particle
         ctx.fillStyle = gradient;
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, particle.size * 5, 0, Math.PI * 2);

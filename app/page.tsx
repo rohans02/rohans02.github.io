@@ -239,7 +239,7 @@ export default function Home() {
 
       {/* ========== THEME TRANSITION OVERLAY (color wipe only) ========== */}
       <motion.div
-        className="fixed inset-0 z-[60] pointer-events-none"
+        className="fixed inset-0 z-60 pointer-events-none"
         initial={{ clipPath: "circle(0% at calc(100% - 42px) 42px)" }}
         animate={{
           clipPath: rippleActive 
