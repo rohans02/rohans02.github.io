@@ -2,21 +2,25 @@
 
 import { motion } from "framer-motion";
 import { Sun, Moon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ThemeToggleProps {
   isDark: boolean;
   onToggle: () => void;
+  className?: string;
 }
 
-export function ThemeToggle({ isDark, onToggle }: ThemeToggleProps) {
+export function ThemeToggle({ isDark, onToggle, className }: ThemeToggleProps) {
   return (
     <motion.button
       onClick={onToggle}
-      className={`fixed top-6 right-6 z-50 p-3 rounded-full backdrop-blur-xl border overflow-hidden ${
+      className={cn(
+        "z-100 p-3 rounded-full border backdrop-blur-md transition-all duration-500",
         isDark
-          ? "border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20"
-          : "border-[#1A2F1A]/20 bg-[#1A2F1A]/5 hover:bg-[#1A2F1A]/10"
-      }`}
+          ? "border-emerald-500/20 bg-black/20 hover:bg-emerald-500/10"
+          : "border-emerald-600/20 bg-white/20 hover:bg-emerald-600/10",
+        className
+      )}
       whileTap={{ scale: 0.9 }}
       whileHover={{ scale: 1.05 }}
       aria-label="Toggle Theme"
@@ -33,7 +37,7 @@ export function ThemeToggle({ isDark, onToggle }: ThemeToggleProps) {
           }}
           transition={{ duration: 0.5, ease: "easeInOut" }}
         >
-          <Sun className="w-5 h-5 text-yellow-400" />
+          <Sun className="w-5 h-5 text-emerald-500" />
         </motion.div>
 
         {/* Moon Icon */}
@@ -47,21 +51,19 @@ export function ThemeToggle({ isDark, onToggle }: ThemeToggleProps) {
           }}
           transition={{ duration: 0.5, ease: "easeInOut" }}
         >
-          <Moon className="w-5 h-5 text-[#1A2F1A]" />
+          <Moon className="w-5 h-5 text-emerald-600" />
         </motion.div>
       </div>
 
-      {/* Animated background glow */}
-      <motion.div
-        className="absolute inset-0 rounded-full"
-        initial={false}
-        animate={{
-          boxShadow: isDark
-            ? "0 0 20px rgba(250, 204, 21, 0.3)"
-            : "0 0 20px rgba(26, 47, 26, 0.15)",
-        }}
-        transition={{ duration: 0.5 }}
-      />
+      {/* Decorative corner accents */}
+      <div className={cn(
+        "absolute -top-px -left-px w-2 h-2 border-t border-l rounded-tl-full transition-colors duration-500",
+        isDark ? "border-emerald-500/40" : "border-emerald-600/40"
+      )} />
+      <div className={cn(
+        "absolute -bottom-px -right-px w-2 h-2 border-b border-r rounded-br-full transition-colors duration-500",
+        isDark ? "border-emerald-500/40" : "border-emerald-600/40"
+      )} />
     </motion.button>
   );
 }

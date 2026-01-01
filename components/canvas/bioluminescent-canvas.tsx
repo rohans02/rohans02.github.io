@@ -8,9 +8,15 @@ import { THEME } from "@/config/theme";
 const SECTION_TEXTURES: Record<string, string> = {
   hero: "/textures/spider-web.jpeg",
   about: "/textures/about-frame.jpg",
+  projects: "/textures/spider-web.jpeg", // Reusing for now
 };
 
-export function BioluminescentCanvas({ isDark, scrollProgress = 0, activeSection = 'hero' }: BioluminescentCanvasProps) {
+export function BioluminescentCanvas({ 
+  isDark, 
+  scrollProgress = 0, 
+  activeSection = 'hero',
+  isHoveringProject = false 
+}: BioluminescentCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
   const mouseRef = useRef({ x: -1000, y: -1000 });
@@ -19,11 +25,16 @@ export function BioluminescentCanvas({ isDark, scrollProgress = 0, activeSection
   const scrollProgressRef = useRef(0);
   const activeSectionRef = useRef<string>(activeSection);
   const transitionProgressRef = useRef(1); // 0 = transitioning, 1 = complete
+  const isHoveringRef = useRef(false);
 
-  // Keep ref in sync for the animation loop
+  // Keep refs in sync for the animation loop
   useEffect(() => {
     scrollProgressRef.current = scrollProgress;
   }, [scrollProgress]);
+
+  useEffect(() => {
+    isHoveringRef.current = isHoveringProject;
+  }, [isHoveringProject]);
 
   // Helper function to set positions from a texture
   const setPositionsFromTexture = (canvas: HTMLCanvasElement, particles: Particle[], texture: HTMLImageElement) => {
@@ -258,7 +269,8 @@ export function BioluminescentCanvas({ isDark, scrollProgress = 0, activeSection
       const progress = scrollProgressRef.current;
       const particles = particlesRef.current;
       const { x: mouseX, y: mouseY } = mouseRef.current;
-      const repulsionRadius = 180;
+      const isHovering = isHoveringRef.current;
+      const repulsionRadius = isHovering ? 300 : 180;
       
       // Fast transition - particles arrive quickly (~2 seconds)
       if (transitionProgressRef.current < 1) {
@@ -284,12 +296,26 @@ export function BioluminescentCanvas({ isDark, scrollProgress = 0, activeSection
         // Particle is "arrived" when close enough to home
         const isNearHome = homeDistance < 20;
 
-        // Mouse repulsion - works for particles that have arrived, even during transition
+        // Mouse interaction
         if (distance < repulsionRadius && (!isTransitioning || isNearHome)) {
           const force = (repulsionRadius - distance) / repulsionRadius;
           const angle = Math.atan2(dy, dx);
-          particle.vx += Math.cos(angle) * force * 0.6;
-          particle.vy += Math.sin(angle) * force * 0.6;
+          
+          if (isHovering) {
+            // Vortex / Swirl effect when hovering a project
+            // Tangential force + slight attraction
+            const swirlSpeed = 2.5;
+            particle.vx += Math.cos(angle + Math.PI / 2) * force * swirlSpeed;
+            particle.vy += Math.sin(angle + Math.PI / 2) * force * swirlSpeed;
+            
+            // Slight pull towards mouse to keep them in the vortex
+            particle.vx -= Math.cos(angle) * force * 0.2;
+            particle.vy -= Math.sin(angle) * force * 0.2;
+          } else {
+            // Normal repulsion
+            particle.vx += Math.cos(angle) * force * 0.6;
+            particle.vy += Math.sin(angle) * force * 0.6;
+          }
         }
 
         // During transition: fast lerp to home, then immediately behave normally
@@ -304,7 +330,8 @@ export function BioluminescentCanvas({ isDark, scrollProgress = 0, activeSection
         }
 
         // Friction
-        const friction = 0.96 - (progress * 0.05);
+        const baseFriction = 0.96 - (progress * 0.05);
+        const friction = isHovering && distance < repulsionRadius ? 0.92 : baseFriction;
         particle.vx *= friction;
         particle.vy *= friction;
         
@@ -333,6 +360,13 @@ export function BioluminescentCanvas({ isDark, scrollProgress = 0, activeSection
         const baseOpacity = isDark ? 0.8 : 0.25;
         const opacity = particle.baseBrightness * baseOpacity * illumination;
 
+        // Color shift when hovering project
+        let particleColor = particle.color;
+        if (isHovering && distance < repulsionRadius) {
+          // Blend towards emerald (16, 185, 129)
+          particleColor = "16, 185, 129";
+        }
+
         const gradient = ctx.createRadialGradient(
           particle.x,
           particle.y,
@@ -344,13 +378,13 @@ export function BioluminescentCanvas({ isDark, scrollProgress = 0, activeSection
 
         if (isDark) {
           // Bioluminescent fireflies - emerald/cyan glow
-          gradient.addColorStop(0, `rgba(${particle.color}, ${opacity})`);
-          gradient.addColorStop(0.4, `rgba(${particle.color}, ${opacity * 0.4})`);
-          gradient.addColorStop(1, `rgba(${particle.color}, 0)`);
+          gradient.addColorStop(0, `rgba(${particleColor}, ${opacity})`);
+          gradient.addColorStop(0.4, `rgba(${particleColor}, ${opacity * 0.4})`);
+          gradient.addColorStop(1, `rgba(${particleColor}, 0)`);
         } else {
           // Golden dust / pollen - use particle's assigned color (golden tan or soft wheat)
-          gradient.addColorStop(0, `rgba(${particle.color}, ${opacity})`);
-          gradient.addColorStop(1, `rgba(${particle.color}, 0)`);
+          gradient.addColorStop(0, `rgba(${particleColor}, ${opacity})`);
+          gradient.addColorStop(1, `rgba(${particleColor}, 0)`);
         }
 
         // Draw particle

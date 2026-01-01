@@ -12,6 +12,7 @@ import {
   Sparkles,
   Files
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface AboutProps {
   isDark: boolean;
@@ -73,7 +74,7 @@ export function About({ isDark }: AboutProps) {
       
       {/* Background Atmosphere */}
       <div 
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-5xl max-h-[600px] blur-[120px] rounded-full pointer-events-none"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-7xl max-h-250 blur-[160px] rounded-full pointer-events-none opacity-20"
         style={{ 
           background: isDark 
             ? `radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, rgba(16, 185, 129, 0.1) 50%, transparent 70%)`
@@ -85,7 +86,7 @@ export function About({ isDark }: AboutProps) {
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="max-w-6xl w-full space-y-8"
+        className="max-w-7xl mx-auto w-full space-y-12"
       >
         {/* Minimal Terminal-style Header */}
         <motion.div 
@@ -93,39 +94,49 @@ export function About({ isDark }: AboutProps) {
           whileInView={{ opacity: 1, width: "100%" }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="flex items-center gap-3 px-4 py-2 rounded-lg border border-white/5 bg-black/20 backdrop-blur-sm overflow-hidden"
+          className={cn(
+            "flex items-center gap-3 px-4 py-2 rounded-lg border backdrop-blur-sm overflow-hidden",
+            isDark ? "border-white/5 bg-black/20" : "border-zinc-200 bg-zinc-50/50"
+          )}
         >
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className={`text-[10px] font-mono uppercase tracking-[0.15em] ${isDark ? 'text-white/40' : 'text-zinc-500'}`}>
+            <span className={cn(
+              "text-[10px] font-mono uppercase tracking-[0.15em]",
+              isDark ? "text-white/40" : "text-zinc-500"
+            )}>
               ~/src/core/
             </span>
           </div>
-          <div className="flex-1 h-px bg-gradient-to-r from-cyan-500/20 via-emerald-500/10 to-transparent" />
-          <span className="text-[9px] font-mono text-cyan-400/60 uppercase tracking-widest">
+          <div className={cn(
+            "flex-1 h-px bg-linear-to-r to-transparent",
+            isDark ? "from-emerald-500/20 via-emerald-500/10" : "from-emerald-500/10 via-emerald-500/5"
+          )} />
+          <span className={cn(
+            "text-[9px] font-mono uppercase tracking-widest",
+            isDark ? "text-cyan-400/60" : "text-cyan-600/60"
+          )}>
             cat profile.md
           </span>
         </motion.div>
 
         {/* IDE WINDOW */}
         <div 
-          className="w-full rounded-xl border overflow-hidden backdrop-blur-xl flex flex-col h-[600px] shadow-2xl transition-colors duration-500"
+          className="w-full rounded-xl border overflow-hidden backdrop-blur-xl flex flex-col h-137.5 md:h-161 shadow-2xl transition-colors duration-500"
           style={{ 
             backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)',
             borderColor: isDark ? 'rgba(6, 182, 212, 0.2)' : 'rgba(6, 182, 212, 0.1)'
           }}
         >
           
-          {/* 1. TITLE BAR (Mac Style) */}
+          {/* 1. TITLE BAR - Updated for consistency */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 bg-black/20">
-            <div className="flex gap-2">
-              <div className="w-3 h-3 rounded-full bg-red-500/50" />
-              <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
-              <div className="w-3 h-3 rounded-full bg-emerald-500/50" />
-            </div>
-            <div className="flex items-center gap-2 text-[10px] font-mono text-cyan-400/60 uppercase tracking-widest">
-              <Terminal size={12} />
-              <span>src / core / {activeFile} — Visual Studio Code</span>
+            <div className="flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <div className="flex items-center gap-2 text-[10px] font-mono text-cyan-400/60 uppercase tracking-widest">
+                <Terminal size={12} />
+                <span>src / core / {activeFile} — Visual Studio Code</span>
+              </div>
             </div>
             <div className="w-10" />
           </div>
@@ -168,7 +179,7 @@ export function About({ isDark }: AboutProps) {
                   <div
                     key={fileName}
                     onClick={() => setActiveFile(fileName as FileKey)}
-                    className={`relative flex items-center gap-2 px-4 py-2 text-xs cursor-pointer border-r border-white/5 min-w-[120px] transition-all ${
+                    className={`relative flex items-center gap-2 px-4 py-2 text-xs cursor-pointer border-r border-white/5 min-w-30 transition-all ${
                       activeFile === fileName 
                         ? "bg-black/40 text-cyan-400" 
                         : "bg-black/20 text-white/20 hover:bg-black/40"
@@ -181,14 +192,14 @@ export function About({ isDark }: AboutProps) {
                       <>
                         <motion.div 
                           layoutId="activeTabBorder"
-                          className="absolute top-0 left-0 right-0 h-[2px] bg-cyan-400" 
+                          className="absolute top-0 left-0 right-0 h-0.5 bg-cyan-400" 
                         />
                         <motion.div 
                           initial={{ width: "0%" }}
                           animate={{ width: "100%" }}
                           transition={{ duration: 8, ease: "linear" }}
                           key={`progress-${fileName}`}
-                          className="absolute bottom-0 left-0 h-[1px] bg-cyan-400/30"
+                          className="absolute bottom-0 left-0 h-px bg-cyan-400/30"
                         />
                       </>
                     )}
@@ -208,7 +219,7 @@ export function About({ isDark }: AboutProps) {
                     className="flex"
                   >
                     {/* Line Numbers */}
-                    <div className="pr-6 border-r border-white/5 text-white/10 text-right select-none min-w-[45px]">
+                    <div className="pr-6 border-r border-white/5 text-white/10 text-right select-none min-w-11.25">
                       {FILES[activeFile].content.split("\n").map((_, i) => (
                         <div key={i} className="h-6 leading-6">{i + 1}</div>
                       ))}
@@ -236,7 +247,7 @@ export function About({ isDark }: AboutProps) {
           </div>
 
           {/* 4. STATUS BAR */}
-          <div className="bg-gradient-to-r from-cyan-600 to-emerald-600 px-4 py-1.5 flex items-center justify-between text-[10px] text-white font-mono">
+          <div className="bg-linear-to-r from-cyan-600 to-emerald-600 px-4 py-1.5 flex items-center justify-between text-[10px] text-white font-mono">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1.5 hover:bg-white/10 px-2 py-0.5 rounded transition-colors cursor-pointer">
                 <Terminal size={12} />

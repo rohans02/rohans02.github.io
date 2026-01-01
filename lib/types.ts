@@ -21,4 +21,19 @@ export interface BioluminescentCanvasProps {
   isDark: boolean;
   scrollProgress?: number;
   activeSection?: 'hero' | 'about' | 'projects' | 'contact';
+  isHoveringProject?: boolean;
+}
+export interface Project {
+  id: string;
+  title: string;
+  description: string;
+  longDescription: string;
+  tags: string[];
+  stack: string[];
+  image: string;
+  images?: string[];
+  link: string;
+  github?: string;
+  year: string;
+  role: string;
 }
