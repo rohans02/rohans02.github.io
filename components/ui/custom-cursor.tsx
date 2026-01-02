@@ -98,7 +98,7 @@ export function CustomCursor({ isDark, activeSection }: CustomCursorProps) {
   }, [cursorX, cursorY]);
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-[9999] hidden md:block" style={{ cursor: 'none' }}>
+    <div className="fixed inset-0 pointer-events-none z-9999 hidden md:block" style={{ cursor: 'none' }}>
       {/* Main Cursor Dot - Raw position for zero latency */}
       <motion.div
         className={cn(

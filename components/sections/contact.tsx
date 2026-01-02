@@ -3,7 +3,16 @@
 import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { Terminal, Send, Github, Twitter, Linkedin, Mail, ExternalLink, ChevronRight } from "lucide-react";
+import { 
+  Terminal, 
+  Send, 
+  Github, 
+  Linkedin, 
+  ExternalLink, 
+  ChevronRight,
+  Code2,
+  Database
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ContactProps {
@@ -22,9 +31,9 @@ export function Contact({ isDark }: ContactProps) {
   const [logs, setLogs] = useState<string[]>([]);
 
   const steps = [
-    { id: 'name', label: 'Input_Identity', placeholder: 'Enter your name...', key: 'name' },
-    { id: 'email', label: 'Input_Endpoint', placeholder: 'Enter your email...', key: 'email' },
-    { id: 'message', label: 'Input_Payload', placeholder: 'Enter your message...', key: 'message' },
+    { id: 'name', label: 'Your Name', placeholder: 'Enter your name...', key: 'name' },
+    { id: 'email', label: 'Email Address', placeholder: 'Enter your email...', key: 'email' },
+    { id: 'message', label: 'Your Message', placeholder: 'How can I help you?', key: 'message' },
   ];
 
   const addLog = (msg: string) => {
@@ -42,12 +51,11 @@ export function Contact({ isDark }: ContactProps) {
     setLogs([]);
     
     const sequence = [
-      "Initializing secure handshake...",
-      "Encrypting payload with RSA-4096...",
-      "Establishing uplink to primary server...",
-      "Routing through proxy nodes...",
-      "Transmitting data packets...",
-      "Finalizing transmission..."
+      "Preparing message...",
+      "Securing connection...",
+      "Connecting to server...",
+      "Sending data...",
+      "Message delivered!"
     ];
 
     for (const msg of sequence) {
@@ -71,7 +79,7 @@ export function Contact({ isDark }: ContactProps) {
   return (
     <section 
       data-section="contact" 
-      className="relative z-10 min-h-screen py-32 px-4 overflow-hidden bg-transparent"
+      className="relative z-10 pt-24 pb-12 px-4 overflow-hidden bg-transparent"
     >
       {/* Background Grid System */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.07]">
@@ -81,7 +89,7 @@ export function Contact({ isDark }: ContactProps) {
         }} />
       </div>
 
-      <div className="max-w-6xl mx-auto relative">
+      <div className="max-w-7xl mx-auto relative">
         {/* Technical Header */}
         <motion.div 
           initial={{ opacity: 0, width: 0 }}
@@ -120,8 +128,23 @@ export function Contact({ isDark }: ContactProps) {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="lg:col-span-8"
+            className="lg:col-span-8 space-y-6"
           >
+            <div className="space-y-2">
+              <h2 className={cn(
+                "text-2xl md:text-3xl font-bold tracking-tight",
+                isDark ? "text-white" : "text-zinc-900"
+              )}>
+                Get In Touch
+              </h2>
+              <p className={cn(
+                "text-sm font-mono uppercase tracking-widest",
+                isDark ? "text-white/40" : "text-zinc-500"
+              )}>
+                Have a project in mind or just want to say hi? Drop me a message below.
+              </p>
+            </div>
+
             <div 
               className="rounded-xl border overflow-hidden backdrop-blur-xl transition-all duration-500 shadow-2xl"
               style={{ 
@@ -148,7 +171,7 @@ export function Contact({ isDark }: ContactProps) {
               </div>
 
               {/* Terminal Body */}
-              <div className="p-6 font-mono text-sm min-h-[350px] flex flex-col">
+              <div className="p-6 font-mono text-sm flex flex-col min-h-98">
                 {isSent ? (
                   <motion.div 
                     initial={{ opacity: 0 }}
@@ -159,10 +182,10 @@ export function Contact({ isDark }: ContactProps) {
                       <Send className="w-5 h-5 text-emerald-500" />
                     </div>
                     <h3 className={cn("text-lg font-bold", isDark ? "text-white" : "text-zinc-900")}>
-                      TRANSMISSION SUCCESSFUL
+                      MESSAGE SENT
                     </h3>
                     <p className="text-zinc-500 text-xs uppercase tracking-widest">
-                      Message has been routed to the primary server.
+                      Thank you! I'll get back to you as soon as possible.
                     </p>
                     <Button 
                       variant="outline" 
@@ -175,7 +198,7 @@ export function Contact({ isDark }: ContactProps) {
                       }}
                       className="mt-6 text-[10px] uppercase tracking-widest interactive"
                     >
-                      Send_Another_Packet
+                      Send_Another_Message
                     </Button>
                   </motion.div>
                 ) : isSubmitting ? (
@@ -270,7 +293,7 @@ export function Contact({ isDark }: ContactProps) {
                           step === steps.length - 1 && formState.message ? "bg-emerald-500" : "bg-zinc-500/30"
                         )} />
                         <span className="text-[10px] text-zinc-500 uppercase tracking-widest">
-                          {step === steps.length - 1 ? "Ready_For_Transmission" : `Step_0${step + 1}_Of_03`}
+                          {step === steps.length - 1 ? "Ready to send" : `Step ${step + 1} of 3`}
                         </span>
                       </div>
                       <div className="flex gap-3">
@@ -294,7 +317,7 @@ export function Contact({ isDark }: ContactProps) {
                               : "bg-emerald-600 text-white hover:bg-emerald-700"
                           )}
                         >
-                          {step === steps.length - 1 ? "Execute_Send" : "Next_Step"}
+                          {step === steps.length - 1 ? "Send Message" : "Next"}
                         </Button>
                       </div>
                     </div>
@@ -304,61 +327,194 @@ export function Contact({ isDark }: ContactProps) {
             </div>
           </motion.div>
 
-          {/* External Uplinks */}
+          {/* External Uplinks - Bento Grid */}
           <motion.div 
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="lg:col-span-4 space-y-8"
+            className="lg:col-span-4 space-y-6"
           >
-            <div className="space-y-6">
-              <h3 className={cn(
-                "text-[10px] font-mono uppercase tracking-[0.3em]",
-                isDark ? "text-white/40" : "text-zinc-500"
-              )}>
-                External_Uplinks
-              </h3>
-              
-              <div className="grid grid-cols-1 gap-4">
-                {[
-                  { name: "GitHub", icon: <Github size={18} />, link: "#", label: "github.com/profile" },
-                  { name: "LinkedIn", icon: <Linkedin size={18} />, link: "#", label: "linkedin.com/in/profile" },
-                  { name: "Twitter", icon: <Twitter size={18} />, link: "#", label: "twitter.com/profile" },
-                  { name: "Email", icon: <Mail size={18} />, link: "mailto:hello@example.com", label: "hello@example.com" },
-                ].map((social) => (
-                  <motion.a 
-                    key={social.name}
-                    href={social.link}
-                    whileHover={{ x: 4, backgroundColor: isDark ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.05)' }}
-                    className="group flex items-center justify-between p-4 rounded-xl border backdrop-blur-md transition-all duration-300 interactive shadow-lg"
-                    style={{ 
-                      backgroundColor: isDark ? 'rgba(2, 13, 6, 0.2)' : 'rgba(248, 250, 245, 0.2)',
-                      borderColor: isDark ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.05)'
-                    }}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className={cn(
-                        "p-2 rounded-md transition-colors",
-                        isDark ? "bg-white/5 text-white/40 group-hover:text-emerald-500" : "bg-zinc-100 text-zinc-500 group-hover:text-emerald-600"
-                      )}>
-                        {social.icon}
-                      </div>
-                      <div className="flex flex-col">
-                        <span className={cn("text-xs font-bold", isDark ? "text-white" : "text-zinc-900")}>
-                          {social.name}
-                        </span>
-                        <span className="text-[10px] font-mono text-zinc-500">
-                          {social.label}
-                        </span>
-                      </div>
-                    </div>
-                    <ExternalLink size={14} className="text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </motion.a>
-                ))}
-              </div>
+            <h3 className={cn(
+              "text-[10px] font-mono uppercase tracking-[0.3em]",
+              isDark ? "text-white/40" : "text-zinc-500"
+            )}>
+              External_Uplinks
+            </h3>
+            
+            <div className="grid grid-cols-2 gap-4">
+              {/* GitHub - Large Card */}
+              <motion.a 
+                href="#"
+                whileHover={{ 
+                  y: -4, 
+                  backgroundColor: "#181717",
+                  borderColor: "#181717"
+                }}
+                className="col-span-2 group relative flex flex-col justify-between p-6 rounded-2xl border backdrop-blur-xl transition-all duration-500 interactive shadow-2xl overflow-hidden"
+                style={{ 
+                  backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)',
+                  borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+                }}
+              >
+                <div className="flex justify-between items-start">
+                  <div className={cn(
+                    "p-3 rounded-xl transition-colors duration-500",
+                    isDark ? "bg-white/5 text-white/40 group-hover:bg-white/10 group-hover:text-white" : "bg-zinc-100 text-zinc-500 group-hover:bg-white/20 group-hover:text-white"
+                  )}>
+                    <Github size={24} />
+                  </div>
+                  <ExternalLink size={16} className="text-zinc-500 opacity-0 group-hover:opacity-100 group-hover:text-white transition-all duration-500" />
+                </div>
+                <div className="mt-8 relative z-10">
+                  <span className={cn("text-sm font-bold block transition-colors duration-500", isDark ? "text-white" : "text-zinc-900", "group-hover:text-white")}>GitHub</span>
+                  <span className={cn("text-[10px] font-mono uppercase tracking-widest transition-colors duration-500", isDark ? "text-white/40" : "text-zinc-500", "group-hover:text-white/60")}>github.com/profile</span>
+                </div>
+                {/* Decorative background element */}
+                <div className="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:opacity-[0.1] group-hover:text-white transition-all duration-700">
+                  <Github size={120} />
+                </div>
+              </motion.a>
+
+              {/* LinkedIn - Square Card */}
+              <motion.a 
+                href="#"
+                whileHover={{ 
+                  y: -4, 
+                  backgroundColor: "#0077B5",
+                  borderColor: "#0077B5"
+                }}
+                className="col-span-1 group flex flex-col justify-between p-5 rounded-2xl border backdrop-blur-xl transition-all duration-500 interactive shadow-xl"
+                style={{ 
+                  backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)',
+                  borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+                }}
+              >
+                <div className={cn(
+                  "w-10 h-10 flex items-center justify-center rounded-lg transition-colors duration-500",
+                  isDark ? "bg-white/5 text-white/40 group-hover:bg-white/10 group-hover:text-white" : "bg-zinc-100 text-zinc-500 group-hover:bg-white/20 group-hover:text-white"
+                )}>
+                  <Linkedin size={20} />
+                </div>
+                <div className="mt-4">
+                  <span className={cn("text-xs font-bold block transition-colors duration-500", isDark ? "text-white" : "text-zinc-900", "group-hover:text-white")}>LinkedIn</span>
+                  <span className={cn("text-[9px] font-mono uppercase transition-colors duration-500", isDark ? "text-white/40" : "text-zinc-500", "group-hover:text-white/60")}>Connect</span>
+                </div>
+              </motion.a>
+
+              {/* X (Twitter) - Square Card */}
+              <motion.a 
+                href="#"
+                whileHover={{ 
+                  y: -4, 
+                  backgroundColor: "#FFFFFF",
+                  borderColor: "#FFFFFF"
+                }}
+                className="col-span-1 group flex flex-col justify-between p-5 rounded-2xl border backdrop-blur-xl transition-all duration-500 interactive shadow-xl"
+                style={{ 
+                  backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)',
+                  borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+                }}
+              >
+                <div className={cn(
+                  "w-10 h-10 flex items-center justify-center rounded-lg transition-colors duration-500",
+                  isDark ? "bg-white/5 text-white/40 group-hover:bg-black/5 group-hover:text-black" : "bg-zinc-100 text-zinc-500 group-hover:bg-black/5 group-hover:text-black"
+                )}>
+                  <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current" aria-hidden="true">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                  </svg>
+                </div>
+                <div className="mt-4">
+                  <span className={cn("text-xs font-bold block transition-colors duration-500", isDark ? "text-white" : "text-zinc-900", "group-hover:text-black")}>X</span>
+                  <span className={cn("text-[9px] font-mono uppercase transition-colors duration-500", isDark ? "text-white/40" : "text-zinc-500", "group-hover:text-black/60")}>Follow</span>
+                </div>
+              </motion.a>
+
+              {/* LeetCode - Square Card */}
+              <motion.a 
+                href="#"
+                whileHover={{ 
+                  y: -4, 
+                  backgroundColor: "#FFA116",
+                  borderColor: "#FFA116"
+                }}
+                className="col-span-1 group flex flex-col justify-between p-5 rounded-2xl border backdrop-blur-xl transition-all duration-500 interactive shadow-xl"
+                style={{ 
+                  backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)',
+                  borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+                }}
+              >
+                <div className={cn(
+                  "w-10 h-10 flex items-center justify-center rounded-lg transition-colors duration-500",
+                  isDark ? "bg-white/5 text-white/40 group-hover:bg-white/10 group-hover:text-white" : "bg-zinc-100 text-zinc-500 group-hover:bg-white/20 group-hover:text-white"
+                )}>
+                  <Code2 size={20} />
+                </div>
+                <div className="mt-4">
+                  <span className={cn("text-xs font-bold block transition-colors duration-500", isDark ? "text-white" : "text-zinc-900", "group-hover:text-white")}>LeetCode</span>
+                  <span className={cn("text-[9px] font-mono uppercase transition-colors duration-500", isDark ? "text-white/40" : "text-zinc-500", "group-hover:text-white/60")}>Solve</span>
+                </div>
+              </motion.a>
+
+              {/* Kaggle - Square Card */}
+              <motion.a 
+                href="#"
+                whileHover={{ 
+                  y: -4, 
+                  backgroundColor: "#20BEFF",
+                  borderColor: "#20BEFF"
+                }}
+                className="col-span-1 group flex flex-col justify-between p-5 rounded-2xl border backdrop-blur-xl transition-all duration-500 interactive shadow-xl"
+                style={{ 
+                  backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)',
+                  borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+                }}
+              >
+                <div className={cn(
+                  "w-10 h-10 flex items-center justify-center rounded-lg transition-colors duration-500",
+                  isDark ? "bg-white/5 text-white/40 group-hover:bg-white/10 group-hover:text-white" : "bg-zinc-100 text-zinc-500 group-hover:bg-white/20 group-hover:text-white"
+                )}>
+                  <Database size={20} />
+                </div>
+                <div className="mt-4">
+                  <span className={cn("text-xs font-bold block transition-colors duration-500", isDark ? "text-white" : "text-zinc-900", "group-hover:text-white")}>Kaggle</span>
+                  <span className={cn("text-[9px] font-mono uppercase transition-colors duration-500", isDark ? "text-white/40" : "text-zinc-500", "group-hover:text-white/60")}>Compete</span>
+                </div>
+              </motion.a>
             </div>
           </motion.div>
         </div>
+
+        {/* Footer Integration */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="mt-12 pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6"
+        >
+          <div className="flex flex-col items-center md:items-start gap-2">
+            <p className={cn(
+              "text-[11px] font-mono tracking-widest",
+              isDark ? "text-white/20" : "text-zinc-400"
+            )}>
+              © {new Date().getFullYear()} Rohan Shinde. All rights reserved.
+            </p>
+          </div>
+
+          <div className="flex flex-col items-center md:items-end gap-1">
+            <span className={cn(
+              "text-[9px] font-mono uppercase tracking-[0.3em]",
+              isDark ? "text-emerald-500/60" : "text-emerald-600/60"
+            )}>
+              Built_With
+            </span>
+            <span className={cn(
+              "text-[10px] font-mono tracking-widest",
+              isDark ? "text-white/40" : "text-zinc-500"
+            )}>
+              Next.js + Tailwind + Framer
+            </span>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

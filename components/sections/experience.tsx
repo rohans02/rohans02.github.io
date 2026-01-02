@@ -14,7 +14,7 @@ export function Experience({ isDark }: ExperienceProps) {
   return (
     <section 
       data-section="experience" 
-      className="relative z-10 min-h-screen py-32 px-4 overflow-hidden bg-transparent"
+      className="relative z-10 min-h-screen py-24 px-4 overflow-hidden bg-transparent"
     >
       {/* Background Grid System */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.07]">
@@ -24,7 +24,7 @@ export function Experience({ isDark }: ExperienceProps) {
         }} />
       </div>
 
-      <div className="max-w-6xl mx-auto relative">
+      <div className="max-w-7xl mx-auto relative">
         {/* Technical Header */}
         <motion.div 
           initial={{ opacity: 0, width: 0 }}
