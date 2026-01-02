@@ -70,11 +70,11 @@ export function About({ isDark }: AboutProps) {
   }, [activeFile]);
 
   return (
-    <section data-section="about" className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 pt-24 pb-16 overflow-hidden bg-transparent">
+    <section data-section="about" className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6 md:px-12 lg:px-20 pt-20 pb-10 overflow-hidden bg-transparent">
       
       {/* Background Atmosphere */}
       <div 
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-7xl max-h-250 blur-[160px] rounded-full pointer-events-none opacity-20"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-4xl max-h-250 blur-[160px] rounded-full pointer-events-none opacity-20"
         style={{ 
           background: isDark 
             ? `radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, rgba(16, 185, 129, 0.1) 50%, transparent 70%)`
@@ -86,7 +86,7 @@ export function About({ isDark }: AboutProps) {
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="max-w-7xl mx-auto w-full"
+        className="max-w-4xl mx-auto w-full"
       >
         {/* Minimal Terminal-style Header */}
         <motion.div 
@@ -95,7 +95,7 @@ export function About({ isDark }: AboutProps) {
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           className={cn(
-            "flex items-center gap-3 px-4 py-2 rounded-lg border backdrop-blur-sm overflow-hidden mb-20",
+            "flex items-center gap-3 px-4 py-2 rounded-lg border backdrop-blur-sm overflow-hidden mb-12",
             isDark ? "border-white/5 bg-black/20" : "border-zinc-200 bg-zinc-50/50"
           )}
         >
@@ -122,7 +122,7 @@ export function About({ isDark }: AboutProps) {
 
         {/* IDE WINDOW */}
         <div 
-          className="w-full rounded-xl border overflow-hidden backdrop-blur-xl flex flex-col h-137.5 md:h-161 shadow-2xl transition-colors duration-500"
+          className="w-full rounded-xl border overflow-hidden backdrop-blur-xl flex flex-col h-[60vh] min-h-[450px] max-h-[650px] shadow-2xl transition-colors duration-500"
           style={{ 
             backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)',
             borderColor: isDark ? 'rgba(6, 182, 212, 0.2)' : 'rgba(6, 182, 212, 0.1)'

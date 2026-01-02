@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, Variants } from "framer-motion";
 import { BioluminescentCanvas } from "@/components/canvas/bioluminescent-canvas";
-import { Button, ThemeToggle, LoadingScreen, FloatingDock, CustomCursor, Magnetic } from "@/components/ui";
+import { Button, LoadingScreen, FloatingDock, CustomCursor, Magnetic } from "@/components/ui";
 import { About, Projects, Experience, Contact } from "@/components/sections";
 import { HERO_WORDS, THEME } from "@/config";
 import { cn } from "@/lib/utils";
@@ -153,7 +153,7 @@ export default function Home() {
       <CustomCursor isDark={isDark} activeSection={activeSection} />
       <LoadingScreen isDark={isDark} onLoadingComplete={() => setIsLoading(false)} />
       
-      {!isLoading && <FloatingDock isDark={isDark} activeSection={activeSection} className="z-50" />}
+      {!isLoading && <FloatingDock isDark={isDark} onToggle={toggleTheme} activeSection={activeSection} className="z-70" />}
 
       <motion.main 
         initial={{ opacity: 0 }}
@@ -179,17 +179,9 @@ export default function Home() {
       
       {/* Global Blueprint Navigation Overlay */}
       {!isLoading && (
-        <div className="fixed inset-0 z-40 pointer-events-none">
-          {/* Geometric Framing - Corner Brackets */}
-          <div className="absolute inset-0 overflow-hidden">
-            <div className={cn("absolute top-12 left-12 w-24 h-24 border-t border-l transition-colors duration-500", isDark ? "border-white/10" : "border-black/10")} />
-            <div className={cn("absolute top-12 right-12 w-24 h-24 border-t border-r transition-colors duration-500", isDark ? "border-white/10" : "border-black/10")} />
-            <div className={cn("absolute bottom-12 left-12 w-24 h-24 border-b border-l transition-colors duration-500", isDark ? "border-white/10" : "border-black/10")} />
-            <div className={cn("absolute bottom-12 right-12 w-24 h-24 border-b border-r transition-colors duration-500", isDark ? "border-white/10" : "border-black/10")} />
-          </div>
-
+        <div className="fixed inset-0 z-70 pointer-events-none">
           {/* Real-time Blueprint Data - Top */}
-          <div className="absolute top-0 left-0 w-full px-20 py-16 flex justify-between items-start">
+          <div className="absolute top-0 left-0 w-full px-6 md:px-12 lg:px-20 py-10 md:py-16 flex justify-between items-start">
             <div className="flex flex-col gap-8">
               {/* <div className="flex flex-col gap-1">
                 <span className={cn("text-[10px] font-mono uppercase tracking-[0.3em]", isDark ? "text-emerald-500/60" : "text-emerald-600/60")}>
@@ -205,7 +197,7 @@ export default function Home() {
                 </div>
               </div> */}
 
-              <div className="flex flex-col gap-2">
+              {/* <div className="flex flex-col gap-2">
                 <span className={cn("text-[10px] font-mono uppercase tracking-[0.3em]", isDark ? "text-white/40" : "text-black/40")}>
                   Section_Indexer
                 </span>
@@ -229,7 +221,7 @@ export default function Home() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </div> */}
             </div>
             
             <div className="hidden md:flex flex-col items-end gap-8 pointer-events-auto">
@@ -246,8 +238,6 @@ export default function Home() {
                   </span>
                 </div>
               </div> */}
-
-              <ThemeToggle isDark={isDark} onToggle={toggleTheme} className="relative" />
             </div>
           </div>
 
@@ -264,16 +254,16 @@ export default function Home() {
       )}
       
       {/* Current theme content */}
-      <section data-section="hero" className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 text-center">
+      <section data-section="hero" className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 md:px-12 lg:px-20 text-center">
         <motion.div 
-          className="relative space-y-8 max-w-5xl"
+          className="relative space-y-8 max-w-6xl mx-auto"
           variants={containerVariants}
           initial="hidden"
           animate={isLoading ? "hidden" : "visible"}
         >
           <div className="space-y-4">
             <motion.h1
-              className="text-6xl md:text-9xl font-bold tracking-tighter leading-[0.85] flex flex-col"
+              className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter leading-[0.85] flex flex-col"
               style={{ color: isDark ? THEME.dark.foreground : THEME.light.foreground }}
             >
               <motion.span variants={wordVariants} className="block">ENGINEERING</motion.span>
@@ -353,21 +343,19 @@ export default function Home() {
         </motion.div>
 
         {/* Scroll Indicator */}
-        <Magnetic strength={0.2}>
-          <div
-            ref={scrollArrowRef}
-            onClick={() => {
-              const aboutSection = document.querySelector('[data-section="about"]');
-              aboutSection?.scrollIntoView({ behavior: "smooth" });
-            }}
-            className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center cursor-pointer animate-bounce interactive"
-          >
-            <p className={cn("text-[9px] font-mono uppercase tracking-[0.4em] transition-colors duration-500", proximityColor)}>
-              Explore_Matrix
-            </p>
-            <div className={cn("w-px h-12 bg-linear-to-b from-current to-transparent transition-colors duration-500", proximityColor)} />
-          </div>
-        </Magnetic>
+        <div
+          ref={scrollArrowRef}
+          onClick={() => {
+            const aboutSection = document.querySelector('[data-section="about"]');
+            aboutSection?.scrollIntoView({ behavior: "smooth" });
+          }}
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center cursor-pointer animate-bounce interactive"
+        >
+          <p className={cn("text-[9px] font-mono uppercase tracking-[0.4em] transition-colors duration-500", proximityColor)}>
+            Explore_Matrix
+          </p>
+          <div className={cn("w-px h-12 bg-linear-to-b from-current to-transparent transition-colors duration-500", proximityColor)} />
+        </div>
       </section>
 
       <About isDark={isDark} />
@@ -378,11 +366,11 @@ export default function Home() {
       {/* ========== THEME TRANSITION OVERLAY (color wipe only) ========== */}
       <motion.div
         className="fixed inset-0 z-60 pointer-events-none"
-        initial={{ clipPath: "circle(0% at calc(100% - 102px) 86px)" }}
+        initial={{ clipPath: "circle(0% at calc(50% + 167px) 54px)" }}
         animate={{
           clipPath: rippleActive 
-            ? "circle(150% at calc(100% - 102px) 86px)" 
-            : "circle(0% at calc(100% - 102px) 86px)"
+            ? "circle(150% at calc(50% + 167px) 54px)" 
+            : "circle(0% at calc(50% + 167px) 54px)"
         }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         style={{ 

@@ -21,11 +21,14 @@ export function Projects({ isDark }: ProjectsProps) {
   return (
     <section 
       data-section="projects" 
-      className="relative z-10 min-h-screen py-24 px-4 overflow-hidden bg-transparent"
+      className="relative z-10 min-h-screen flex flex-col items-center justify-center pt-20 pb-10 px-6 md:px-12 lg:px-20 overflow-hidden bg-transparent"
     >
       {/* Background Atmosphere */}
       <div 
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-7xl max-h-250 blur-[160px] rounded-full pointer-events-none opacity-20"
+        className={cn(
+          "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-h-250 blur-[160px] rounded-full pointer-events-none opacity-20 transition-all duration-700",
+          hoveredIndex !== null ? "max-w-6xl" : "max-w-4xl"
+        )}
         style={{ 
           background: isDark 
             ? `radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.1) 50%, transparent 70%)`
@@ -33,7 +36,7 @@ export function Projects({ isDark }: ProjectsProps) {
         }}
       />
 
-      <div className="max-w-7xl mx-auto">
+      <div className="w-full flex flex-col items-center">
         {/* Technical Header */}
         <motion.div 
           initial={{ opacity: 0, width: 0 }}
@@ -41,7 +44,7 @@ export function Projects({ isDark }: ProjectsProps) {
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           className={cn(
-            "flex items-center gap-3 px-4 py-2 rounded-lg border backdrop-blur-sm overflow-hidden mb-20",
+            "flex items-center gap-3 px-4 py-2 rounded-lg border backdrop-blur-sm overflow-hidden mb-12 w-full max-w-4xl",
             isDark ? "border-white/5 bg-black/20" : "border-zinc-200 bg-zinc-50/50"
           )}
         >
@@ -66,7 +69,10 @@ export function Projects({ isDark }: ProjectsProps) {
           </span>
         </motion.div>
 
-        <div className="flex flex-col md:flex-row gap-4 h-200 md:h-160">
+        <div className={cn(
+          "w-full transition-all duration-700 ease-in-out h-[80vh] md:h-[60vh] min-h-[500px] max-h-[700px] flex flex-col md:flex-row gap-4",
+          hoveredIndex !== null ? "max-w-6xl" : "max-w-4xl"
+        )}>
           {PROJECTS.map((project, index) => (
             <BentoCard 
               key={project.id} 
@@ -140,7 +146,7 @@ function BentoCard({
         isDark 
           ? "bg-black/10 border-white/10 hover:border-emerald-500/50 backdrop-blur-[2px]" 
           : "bg-white/10 border-zinc-200 hover:border-emerald-500/30 backdrop-blur-[2px]",
-        isHovered ? "flex-3" : isAnyHovered ? "flex-[0.5]" : "flex-1"
+        isHovered ? "flex-[5]" : isAnyHovered ? "flex-[0.3]" : "flex-1"
       )}
     >
       {/* Background Image / Carousel */}
@@ -166,13 +172,13 @@ function BentoCard({
 
       {/* Content */}
       <div className={cn(
-        "relative z-10 h-full flex flex-col justify-between transition-all duration-500",
+        "relative z-10 h-full flex flex-col transition-all duration-500",
         isHovered ? "p-8" : "p-6",
-        isShrunken ? "items-center justify-center" : ""
+        isShrunken ? "items-center justify-center" : "justify-between"
       )}>
         <div className={cn(
           "flex justify-between items-start w-full transition-all duration-500",
-          isShrunken ? "opacity-0 scale-90 pointer-events-none" : "opacity-100 scale-100"
+          isShrunken ? "opacity-0 scale-90 pointer-events-none hidden" : "opacity-100 scale-100 flex"
         )}>
           <div className={cn(
             "flex items-center gap-3 p-3 rounded-2xl border backdrop-blur-md transition-all duration-500",
@@ -230,9 +236,9 @@ function BentoCard({
           >
             <h3 
               className={cn(
-                "font-bold tracking-tighter transition-all duration-500 leading-none",
-                isHovered ? "text-4xl md:text-5xl text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)] text-left" : "text-xl md:text-2xl text-left",
-                isShrunken ? "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-90 text-white/90 drop-shadow-[0_0_10px_rgba(255,255,255,0.2)] whitespace-nowrap" : !isHovered && (isDark ? "text-white" : "text-zinc-900")
+                "font-bold tracking-tighter transition-all duration-500 leading-tight",
+                isHovered ? "text-3xl md:text-4xl text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)] text-left" : "text-xl md:text-2xl text-left",
+                isShrunken ? "-rotate-90 text-white/90 drop-shadow-[0_0_10px_rgba(255,255,255,0.2)] whitespace-nowrap" : !isHovered && (isDark ? "text-white" : "text-zinc-900")
               )}
             >
               {project.title}
@@ -248,7 +254,7 @@ function BentoCard({
             {/* Tech Stack */}
             <div className={cn(
               "flex flex-wrap gap-2 transition-all duration-500 delay-100",
-              isHovered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"
+              isHovered ? "opacity-100 translate-y-0 flex" : "opacity-0 translate-y-2 pointer-events-none hidden"
             )}>
               {project.stack.map((tech) => (
                 <span key={tech} className={cn(

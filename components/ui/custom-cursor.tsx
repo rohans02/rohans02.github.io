@@ -16,27 +16,13 @@ export function CustomCursor({ isDark, activeSection }: CustomCursorProps) {
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
   
-  // Faster, snappier spring for the ring to reduce perceived lag
-  const springConfig = { damping: 20, stiffness: 300, mass: 0.5 };
+  // Smoother, more fluid spring for the follow effect
+  const springConfig = { damping: 35, stiffness: 250, mass: 0.8 };
   const ringX = useSpring(cursorX, springConfig);
   const ringY = useSpring(cursorY, springConfig);
 
-  // Reactive offsets for crosshair lines - following the ring
-  const topY = useTransform(ringY, (val) => val - 20);
-  const bottomY = useTransform(ringY, (val) => val + 20);
-  const leftX = useTransform(ringX, (val) => val - 20);
-  const rightX = useTransform(ringX, (val) => val + 20);
-
   const getSectionColor = () => {
-    return "bg-[#FDB813]"; // Sun Yellow
-  };
-
-  const getSectionBorderColor = () => {
-    return "border-[#FDB813]/30";
-  };
-
-  const getSectionLineColor = () => {
-    return "bg-[#FDB813]";
+    return "text-[#0095FF]"; // Rocket Blue
   };
 
   useEffect(() => {
@@ -81,69 +67,68 @@ export function CustomCursor({ isDark, activeSection }: CustomCursorProps) {
 
   return (
     <div className="fixed inset-0 pointer-events-none z-9999 hidden md:block" style={{ cursor: 'none' }}>
-      {/* Main Cursor Dot - Raw position for zero latency */}
+      {/* Rocket / Arrow Container */}
       <motion.div
-        className={cn(
-          "absolute w-2 h-2 rounded-full transition-colors duration-300 shadow-[0_0_10px_#FDB813]",
-          getSectionColor()
-        )}
-        animate={{
-          scale: isClicking ? 0.5 : 1,
+        style={{ 
+          x: cursorX, 
+          y: cursorY, 
+          translateX: "-50%", 
+          translateY: "-50%",
+          rotate: -20 // Standard cursor tilt
         }}
-        style={{ x: cursorX, y: cursorY, translateX: "-50%", translateY: "-50%" }}
-      />
+        className="relative flex flex-col items-center"
+      >
+        {/* Main Arrow Shape */}
+        <motion.svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          animate={{
+            scale: isClicking ? 0.85 : isHovering ? 1.1 : 1,
+            y: isHovering ? -3 : 0
+          }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          className={cn("drop-shadow-[0_0_8px_rgba(0,149,255,0.5)]", getSectionColor())}
+        >
+          <path
+            d="M12 3L4 19C4 19 10 17 12 17C14 17 20 19 20 19L12 3Z"
+            fill="currentColor"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinejoin="round"
+          />
+        </motion.svg>
 
-      {/* Outer Ring / Crosshair - Spring position for smooth follow */}
-      <motion.div
-        className={cn(
-          "absolute border transition-all duration-300",
-          getSectionBorderColor()
-        )}
-        animate={{
-          width: isHovering ? 40 : 24,
-          height: isHovering ? 40 : 24,
-          rotate: isHovering ? 90 : 0,
-          scale: isClicking ? 0.8 : 1,
-          opacity: isClicking ? 0.8 : 1,
-        }}
-        style={{ x: ringX, y: ringY, translateX: "-50%", translateY: "-50%", borderRadius: isHovering ? "4px" : "50%" }}
-      />
-
-      {/* Crosshair Lines (Visible on hover) */}
-      <AnimatePresence>
-        {isHovering && (
-          <>
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className={cn("absolute w-px h-2 -translate-x-1/2", getSectionLineColor())}
-              style={{ x: ringX, y: topY, translateX: "-50%" }}
-            />
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className={cn("absolute w-px h-2 -translate-x-1/2", getSectionLineColor())}
-              style={{ x: ringX, y: bottomY, translateX: "-50%" }}
-            />
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className={cn("absolute h-px w-2 -translate-y-1/2", getSectionLineColor())}
-              style={{ x: leftX, y: ringY, translateY: "-50%" }}
-            />
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className={cn("absolute h-px w-2 -translate-y-1/2", getSectionLineColor())}
-              style={{ x: rightX, y: ringY, translateY: "-50%" }}
-            />
-          </>
-        )}
-      </AnimatePresence>
+        {/* Animated Trail Lines - "Rain Effect" */}
+        <div className={cn("absolute top-[16px] flex gap-1 items-start", isHovering ? "opacity-100" : "opacity-0")}>
+          <AnimatePresence>
+            {[...Array(3)].map((_, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 0 }}
+                animate={{
+                  y: [0, 12],
+                  opacity: 1,
+                  height: [2, 6, 2],
+                }}
+                exit={{ opacity: 0 }}
+                transition={{
+                  duration: 0.4 + (i * 0.1),
+                  repeat: Infinity,
+                  ease: "linear",
+                  delay: i * 0.1,
+                }}
+                className={cn(
+                  "w-[1px] rounded-full",
+                  i === 1 ? "bg-[#FFD60A]" : "bg-[#0095FF]"
+                )}
+              />
+            ))}
+          </AnimatePresence>
+        </div>
+      </motion.div>
     </div>
   );
 }

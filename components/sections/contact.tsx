@@ -79,7 +79,7 @@ export function Contact({ isDark }: ContactProps) {
   return (
     <section 
       data-section="contact" 
-      className="relative z-10 pt-24 pb-12 px-4 overflow-hidden bg-transparent"
+      className="relative z-10 min-h-screen flex flex-col items-center justify-center pt-20 pb-10 px-6 md:px-12 lg:px-20 overflow-hidden bg-transparent"
     >
       {/* Background Grid System */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.07]">
@@ -89,7 +89,7 @@ export function Contact({ isDark }: ContactProps) {
         }} />
       </div>
 
-      <div className="max-w-7xl mx-auto relative">
+      <div className="max-w-4xl mx-auto w-full relative">
         {/* Technical Header */}
         <motion.div 
           initial={{ opacity: 0, width: 0 }}
@@ -97,7 +97,7 @@ export function Contact({ isDark }: ContactProps) {
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           className={cn(
-            "flex items-center gap-3 px-4 py-2 rounded-lg border backdrop-blur-sm overflow-hidden mb-20",
+            "flex items-center gap-3 px-4 py-2 rounded-lg border backdrop-blur-sm overflow-hidden mb-12",
             isDark ? "border-white/5 bg-black/20" : "border-zinc-200 bg-zinc-50/50"
           )}
         >

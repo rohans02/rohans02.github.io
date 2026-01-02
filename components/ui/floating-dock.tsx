@@ -5,15 +5,17 @@ import { Home, User, Code2, Briefcase, Mail } from "lucide-react";
 import { THEME } from "@/config";
 import { cn } from "@/lib/utils";
 import { Magnetic } from "./magnetic";
+import { ThemeToggle } from "./theme-toggle";
 
 interface FloatingDockProps {
   isDark: boolean;
+  onToggle: () => void;
   activeSection: string;
   className?: string;
   animateEntrance?: boolean;
 }
 
-export function FloatingDock({ isDark, activeSection, className, animateEntrance = true }: FloatingDockProps) {
+export function FloatingDock({ isDark, onToggle, activeSection, className, animateEntrance = true }: FloatingDockProps) {
   const items = [
     { id: "hero", icon: Home, label: "Home" },
     { id: "about", icon: User, label: "About" },
@@ -93,6 +95,14 @@ export function FloatingDock({ isDark, activeSection, className, animateEntrance
             </Magnetic>
           );
         })}
+
+        <div className={cn("w-px h-8 self-center mx-1", isDark ? "bg-white/10" : "bg-black/10")} />
+        
+        <ThemeToggle 
+          isDark={isDark} 
+          onToggle={onToggle} 
+          className="!p-2 !border-none !bg-transparent !backdrop-blur-none" 
+        />
       </div>
     </motion.nav>
   );

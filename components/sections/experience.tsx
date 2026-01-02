@@ -15,7 +15,7 @@ export function Experience({ isDark }: ExperienceProps) {
   return (
     <section 
       data-section="experience" 
-      className="relative z-10 min-h-screen py-24 px-4 overflow-hidden bg-transparent"
+      className="relative z-10 min-h-screen flex flex-col items-center justify-center pt-20 pb-10 px-6 md:px-12 lg:px-20 overflow-hidden bg-transparent"
     >
       {/* Background Grid System */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.07]">
@@ -25,7 +25,7 @@ export function Experience({ isDark }: ExperienceProps) {
         }} />
       </div>
 
-      <div className="max-w-7xl mx-auto relative">
+      <div className="max-w-4xl mx-auto w-full relative">
         {/* Technical Header */}
         <motion.div 
           initial={{ opacity: 0, width: 0 }}
@@ -33,7 +33,7 @@ export function Experience({ isDark }: ExperienceProps) {
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           className={cn(
-            "flex items-center gap-3 px-4 py-2 rounded-lg border backdrop-blur-sm overflow-hidden mb-20",
+            "flex items-center gap-3 px-4 py-2 rounded-lg border backdrop-blur-sm overflow-hidden mb-12",
             isDark ? "border-white/5 bg-black/20" : "border-zinc-200 bg-zinc-50/50"
           )}
         >
@@ -161,18 +161,23 @@ function ExperienceModule({
         </Magnetic>
       </div>
       
-      <div className={cn(
-        "relative overflow-hidden rounded-sm border transition-all duration-500 interactive",
-        isDark 
-          ? "bg-zinc-950/40 border-white/5 hover:border-emerald-500/40" 
-          : "bg-white border-zinc-200 hover:border-emerald-500/40",
-        isHovered ? "-translate-y-1 shadow-lg" : ""
-      )}>
+      <div 
+        className={cn(
+          "relative overflow-hidden rounded-xl border backdrop-blur-xl transition-all duration-500 interactive shadow-2xl",
+          isHovered ? "-translate-y-1" : ""
+        )}
+        style={{ 
+          backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)',
+          borderColor: isHovered 
+            ? (isDark ? 'rgba(16, 185, 129, 0.4)' : 'rgba(16, 185, 129, 0.4)')
+            : (isDark ? 'rgba(6, 182, 212, 0.2)' : 'rgba(6, 182, 212, 0.1)')
+        }}
+      >
         {/* Module Header */}
         <div className={cn(
           "flex items-center justify-between px-6 py-3 border-b transition-colors",
-          isDark ? "border-white/5 bg-white/5" : "border-zinc-100 bg-zinc-50",
-          isHovered && "border-emerald-500/20 bg-emerald-500/5"
+          isDark ? "border-white/5 bg-black/20" : "border-zinc-200/50 bg-black/5",
+          isHovered && (isDark ? "border-emerald-500/30 bg-emerald-500/10" : "border-emerald-500/20 bg-emerald-500/5")
         )}>
           <div className="flex items-center gap-4">
             <span className="text-[10px] font-mono text-emerald-500/60">
@@ -201,11 +206,11 @@ function ExperienceModule({
         </div>
 
         {/* Module Body */}
-        <div className="p-8 grid grid-cols-1 md:grid-cols-12 gap-8">
+        <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8">
           {/* Role & Company */}
           <div className="md:col-span-4 space-y-2">
             <h3 className={cn(
-              "text-2xl font-bold tracking-tight",
+              "text-xl md:text-2xl font-bold tracking-tight",
               isDark ? "text-white" : "text-zinc-900"
             )}>
               {experience.role}
