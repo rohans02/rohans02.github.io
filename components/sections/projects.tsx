@@ -194,7 +194,7 @@ function BentoCard({
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
                 className={cn(
-                  "p-2.5 rounded-full border backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-emerald-500/10",
+                  "p-2.5 rounded-full border backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-emerald-500/10 interactive",
                   isDark ? "bg-white/5 border-white/10 text-white/60 hover:text-emerald-400 hover:border-emerald-500/50" : "bg-black/5 border-black/10 text-black/60 hover:text-emerald-600 hover:border-emerald-600/50"
                 )}
               >
@@ -207,7 +207,7 @@ function BentoCard({
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
               className={cn(
-                "p-2.5 rounded-full border backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-emerald-500/10",
+                "p-2.5 rounded-full border backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-emerald-500/10 interactive",
                 isDark ? "bg-white/5 border-white/10 text-white/60 hover:text-emerald-400 hover:border-emerald-500/50" : "bg-black/5 border-black/10 text-black/60 hover:text-emerald-600 hover:border-emerald-600/50"
               )}
             >

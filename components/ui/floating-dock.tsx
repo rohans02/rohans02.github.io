@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Home, User, Code2, Briefcase, Mail } from "lucide-react";
 import { THEME } from "@/config";
 import { cn } from "@/lib/utils";
+import { Magnetic } from "./magnetic";
 
 interface FloatingDockProps {
   isDark: boolean;
@@ -26,7 +27,14 @@ export function FloatingDock({ isDark, activeSection, className, animateEntrance
   const scrollToSection = (id: string) => {
     const element = document.querySelector(`[data-section="${id}"]`);
     if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+      // @ts-ignore
+      if (window.lenis) {
+        // @ts-ignore
+        window.lenis.scrollTo(element);
+      } else {
+        const top = element.getBoundingClientRect().top + window.pageYOffset;
+        window.scrollTo({ top, behavior: "smooth" });
+      }
     }
   };
 
@@ -45,44 +53,44 @@ export function FloatingDock({ isDark, activeSection, className, animateEntrance
         {items.map((item) => {
           const isActive = activeSection === item.id;
           return (
-            <motion.button
-              key={item.id}
-              onClick={() => scrollToSection(item.id)}
-              whileHover={{ 
-                scale: 1.1, 
-                y: -2,
-              }}
-              whileTap={{ scale: 0.95 }}
-              className={cn(
-                "p-2 rounded-lg transition-all duration-200 relative group interactive",
-                isActive ? "text-emerald-500" : (isDark ? "text-white/40" : "text-black/40")
-              )}
-              title={item.label}
-            >
-              <item.icon className="w-5 h-5" />
-              
-              {/* Active Indicator Dot */}
-              {isActive && (
-                <motion.div 
-                  layoutId="activeDot"
-                  transition={{
-                    type: "spring",
-                    stiffness: 500,
-                    damping: 30,
-                    mass: 0.5
-                  }}
-                  className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"
-                />
-              )}
+            <Magnetic key={item.id} strength={0.2}>
+              <motion.button
+                onClick={() => scrollToSection(item.id)}
+                whileHover={{ 
+                  scale: 1.1, 
+                  y: -2,
+                }}
+                whileTap={{ scale: 0.95 }}
+                className={cn(
+                  "p-2 rounded-lg transition-all duration-200 relative group interactive",
+                  isActive ? "text-emerald-500" : (isDark ? "text-white/40" : "text-black/40")
+                )}
+              >
+                <item.icon className="w-5 h-5" />
+                
+                {/* Active Indicator Dot */}
+                {isActive && (
+                  <motion.div 
+                    layoutId="activeDot"
+                    transition={{
+                      type: "spring",
+                      stiffness: 500,
+                      damping: 30,
+                      mass: 0.5
+                    }}
+                    className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"
+                  />
+                )}
 
-              {/* Tooltip */}
-              <span className={cn(
-                "absolute -bottom-10 left-1/2 -translate-x-1/2 px-2 py-1 rounded text-[10px] font-mono uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap",
-                isDark ? "bg-zinc-900 text-white border border-white/10" : "bg-white text-black border border-zinc-200"
-              )}>
-                {item.label}
-              </span>
-            </motion.button>
+                {/* Tooltip */}
+                <span className={cn(
+                  "absolute -bottom-10 left-1/2 -translate-x-1/2 px-2 py-1 rounded text-[10px] font-mono uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap",
+                  isDark ? "bg-zinc-900 text-white border border-white/10" : "bg-white text-black border border-zinc-200"
+                )}>
+                  {item.label}
+                </span>
+              </motion.button>
+            </Magnetic>
           );
         })}
       </div>

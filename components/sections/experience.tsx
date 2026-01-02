@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { EXPERIENCES } from "@/config/constants";
 import { cn } from "@/lib/utils";
 import { Terminal, Briefcase, Calendar, Cpu, Hexagon } from "lucide-react";
+import { Magnetic } from "@/components/ui";
 
 interface ExperienceProps {
   isDark: boolean;
@@ -58,33 +59,28 @@ export function Experience({ isDark }: ExperienceProps) {
         </motion.div>
 
         {/* The Schematic Bus */}
-        <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <div className="relative flex flex-col lg:flex-row gap-12">
           {/* Left Column: The Main Data Bus (Desktop) */}
-          <div className="hidden lg:block lg:col-span-1 relative">
-            <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-24 overflow-hidden pointer-events-none">
-              <div className={cn(
-                "absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2",
-                isDark ? "bg-white/10" : "bg-zinc-200"
-              )}>
-                {/* Flowing Data Stream */}
-                <motion.div 
-                  className="absolute top-0 left-0 w-full bg-linear-to-b from-transparent via-emerald-500 to-transparent shadow-[0_0_20px_rgba(16,185,129,0.8)]"
-                  style={{ height: '200px' }}
-                  animate={{ 
-                    top: ["-200px", "100%"]
-                  }}
-                  transition={{ 
-                    duration: 3, 
-                    repeat: Infinity, 
-                    ease: "linear" 
-                  }}
-                />
-              </div>
+          <div className="hidden lg:block w-24 relative shrink-0">
+            <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-28 w-px bg-emerald-500/10 overflow-hidden">
+              {/* Flowing Data Stream */}
+              <motion.div 
+                className="absolute top-0 left-0 w-full bg-linear-to-b from-transparent via-emerald-500 to-transparent shadow-[0_0_20px_rgba(16,185,129,0.8)]"
+                style={{ height: '200px' }}
+                animate={{ 
+                  top: ["-200px", "100%"]
+                }}
+                transition={{ 
+                  duration: 3, 
+                  repeat: Infinity, 
+                  ease: "linear" 
+                }}
+              />
             </div>
           </div>
 
           {/* Right Column: Experience Modules */}
-          <div className="lg:col-span-11 space-y-12">
+          <div className="flex-1 space-y-12">
             {EXPERIENCES.map((exp, index) => (
               <ExperienceModule 
                 key={exp.id}
@@ -143,24 +139,26 @@ function ExperienceModule({
     >
       {/* Connection Trace (Desktop) */}
       <div className={cn(
-        "hidden lg:block absolute -left-12 top-12 w-12 h-px transition-colors duration-500",
+        "hidden lg:block absolute -left-24 top-12 w-24 h-px transition-colors duration-500",
         isHovered ? "bg-emerald-500" : "bg-emerald-500/20"
       )} />
 
       {/* Timeline Node - Hexagon */}
-      <div className="hidden lg:flex absolute -left-[3.45rem] top-10 z-30 items-center justify-center">
-        <motion.div
-          animate={{ 
-            rotate: isHovered ? 90 : 0,
-            scale: isHovered ? 1.2 : 1
-          }}
-          className={cn(
-            "transition-colors duration-500",
-            isHovered ? "text-emerald-500 drop-shadow-[0_0_8px_rgba(16,185,129,0.8)]" : "text-zinc-500/40"
-          )}
-        >
-          <Hexagon size={16} fill={isHovered ? "currentColor" : "transparent"} />
-        </motion.div>
+      <div className="hidden lg:flex absolute -left-[6.5rem] top-10 z-30 items-center justify-center">
+        <Magnetic strength={0.2}>
+          <motion.div
+            animate={{ 
+              rotate: isHovered ? 90 : 0,
+              scale: isHovered ? 1.2 : 1
+            }}
+            className={cn(
+              "transition-colors duration-500 interactive",
+              isHovered ? "text-emerald-500 drop-shadow-[0_0_8px_rgba(16,185,129,0.8)]" : "text-zinc-500/40"
+            )}
+          >
+            <Hexagon size={16} fill={isHovered ? "currentColor" : "transparent"} />
+          </motion.div>
+        </Magnetic>
       </div>
       
       <div className={cn(
@@ -168,7 +166,7 @@ function ExperienceModule({
         isDark 
           ? "bg-zinc-950/40 border-white/5 hover:border-emerald-500/40" 
           : "bg-white border-zinc-200 hover:border-emerald-500/40",
-        isHovered ? "translate-x-2" : ""
+        isHovered ? "-translate-y-1 shadow-lg" : ""
       )}>
         {/* Module Header */}
         <div className={cn(

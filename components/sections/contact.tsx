@@ -13,7 +13,7 @@ import {
   Code2,
   Database
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button, Magnetic } from "@/components/ui";
 
 interface ContactProps {
   isDark: boolean;
@@ -128,7 +128,7 @@ export function Contact({ isDark }: ContactProps) {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="lg:col-span-8 space-y-6"
+            className="lg:col-span-7 space-y-6"
           >
             <div className="space-y-2">
               <h2 className={cn(
@@ -187,19 +187,21 @@ export function Contact({ isDark }: ContactProps) {
                     <p className="text-zinc-500 text-xs uppercase tracking-widest">
                       Thank you! I'll get back to you as soon as possible.
                     </p>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => {
-                        setIsSent(false);
-                        setStep(0);
-                        setFormState({ name: "", email: "", message: "" });
-                        setLogs([]);
-                      }}
-                      className="mt-6 text-[10px] uppercase tracking-widest interactive"
-                    >
-                      Send_Another_Message
-                    </Button>
+                    <Magnetic>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          setIsSent(false);
+                          setStep(0);
+                          setFormState({ name: "", email: "", message: "" });
+                          setLogs([]);
+                        }}
+                        className="mt-6 text-[10px] uppercase tracking-widest interactive"
+                      >
+                        Send_Another_Message
+                      </Button>
+                    </Magnetic>
                   </motion.div>
                 ) : isSubmitting ? (
                   <div className="space-y-2 py-4">
@@ -255,7 +257,6 @@ export function Contact({ isDark }: ContactProps) {
                           </label>
                           {steps[step].id === 'message' ? (
                             <textarea 
-                              autoFocus
                               required
                               placeholder={steps[step].placeholder}
                               rows={4}
@@ -269,7 +270,6 @@ export function Contact({ isDark }: ContactProps) {
                             />
                           ) : (
                             <input 
-                              autoFocus
                               type={steps[step].id === 'email' ? 'email' : 'text'}
                               required
                               placeholder={steps[step].placeholder}
@@ -298,27 +298,31 @@ export function Contact({ isDark }: ContactProps) {
                       </div>
                       <div className="flex gap-3">
                         {step > 0 && (
-                          <Button 
-                            type="button"
-                            onClick={() => setStep(step - 1)}
-                            variant="ghost"
-                            className="h-10 px-4 text-[10px] font-mono uppercase tracking-widest interactive"
-                          >
-                            Back
-                          </Button>
+                          <Magnetic>
+                            <Button 
+                              type="button"
+                              onClick={() => setStep(step - 1)}
+                              variant="ghost"
+                              className="h-10 px-4 text-[10px] font-mono uppercase tracking-widest interactive"
+                            >
+                              Back
+                            </Button>
+                          </Magnetic>
                         )}
-                        <Button 
-                          type="submit"
-                          disabled={!formState[steps[step].key as keyof typeof formState]}
-                          className={cn(
-                            "h-10 px-6 text-[10px] font-mono uppercase tracking-[0.2em] transition-all duration-500 interactive",
-                            isDark
-                              ? "bg-emerald-500 text-black hover:bg-emerald-400"
-                              : "bg-emerald-600 text-white hover:bg-emerald-700"
-                          )}
-                        >
-                          {step === steps.length - 1 ? "Send Message" : "Next"}
-                        </Button>
+                        <Magnetic>
+                          <Button 
+                            type="submit"
+                            disabled={!formState[steps[step].key as keyof typeof formState]}
+                            className={cn(
+                              "h-10 px-6 text-[10px] font-mono uppercase tracking-[0.2em] transition-all duration-500 interactive",
+                              isDark
+                                ? "bg-emerald-500 text-black hover:bg-emerald-400"
+                                : "bg-emerald-600 text-white hover:bg-emerald-700"
+                            )}
+                          >
+                            {step === steps.length - 1 ? "Send Message" : "Next"}
+                          </Button>
+                        </Magnetic>
                       </div>
                     </div>
                   </form>
@@ -332,7 +336,7 @@ export function Contact({ isDark }: ContactProps) {
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="lg:col-span-4 space-y-6"
+            className="lg:col-span-5 space-y-6"
           >
             <h3 className={cn(
               "text-[10px] font-mono uppercase tracking-[0.3em]",
@@ -343,143 +347,153 @@ export function Contact({ isDark }: ContactProps) {
             
             <div className="grid grid-cols-2 gap-4">
               {/* GitHub - Large Card */}
-              <motion.a 
-                href="#"
-                whileHover={{ 
-                  y: -4, 
-                  backgroundColor: "#181717",
-                  borderColor: "#181717"
-                }}
-                className="col-span-2 group relative flex flex-col justify-between p-6 rounded-2xl border backdrop-blur-xl transition-all duration-500 interactive shadow-2xl overflow-hidden"
-                style={{ 
-                  backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)',
-                  borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
-                }}
-              >
-                <div className="flex justify-between items-start">
-                  <div className={cn(
-                    "p-3 rounded-xl transition-colors duration-500",
-                    isDark ? "bg-white/5 text-white/40 group-hover:bg-white/10 group-hover:text-white" : "bg-zinc-100 text-zinc-500 group-hover:bg-white/20 group-hover:text-white"
-                  )}>
-                    <Github size={24} />
+              <Magnetic className="col-span-2" strength={0.1}>
+                <motion.a 
+                  href="#"
+                  whileHover={{ 
+                    y: -4, 
+                    backgroundColor: "#181717",
+                    borderColor: "#181717"
+                  }}
+                  className="w-full h-full group relative flex flex-col justify-between p-6 rounded-2xl border backdrop-blur-xl transition-all duration-500 interactive shadow-2xl overflow-hidden"
+                  style={{ 
+                    backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)',
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+                  }}
+                >
+                  <div className="flex justify-between items-start">
+                    <div className={cn(
+                      "p-3 rounded-xl transition-colors duration-500",
+                      isDark ? "bg-white/5 text-white/40 group-hover:bg-white/10 group-hover:text-white" : "bg-zinc-100 text-zinc-500 group-hover:bg-white/20 group-hover:text-white"
+                    )}>
+                      <Github size={24} />
+                    </div>
+                    <ExternalLink size={16} className="text-zinc-500 opacity-0 group-hover:opacity-100 group-hover:text-white transition-all duration-500" />
                   </div>
-                  <ExternalLink size={16} className="text-zinc-500 opacity-0 group-hover:opacity-100 group-hover:text-white transition-all duration-500" />
-                </div>
-                <div className="mt-8 relative z-10">
-                  <span className={cn("text-sm font-bold block transition-colors duration-500", isDark ? "text-white" : "text-zinc-900", "group-hover:text-white")}>GitHub</span>
-                  <span className={cn("text-[10px] font-mono uppercase tracking-widest transition-colors duration-500", isDark ? "text-white/40" : "text-zinc-500", "group-hover:text-white/60")}>github.com/profile</span>
-                </div>
-                {/* Decorative background element */}
-                <div className="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:opacity-[0.1] group-hover:text-white transition-all duration-700">
-                  <Github size={120} />
-                </div>
-              </motion.a>
+                  <div className="mt-8 relative z-10">
+                    <span className={cn("text-sm font-bold block transition-colors duration-500", isDark ? "text-white" : "text-zinc-900", "group-hover:text-white")}>GitHub</span>
+                    <span className={cn("text-[10px] font-mono uppercase tracking-widest transition-colors duration-500", isDark ? "text-white/40" : "text-zinc-500", "group-hover:text-white/60")}>github.com/profile</span>
+                  </div>
+                  {/* Decorative background element */}
+                  <div className="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:opacity-[0.1] group-hover:text-white transition-all duration-700">
+                    <Github size={120} />
+                  </div>
+                </motion.a>
+              </Magnetic>
 
               {/* LinkedIn - Square Card */}
-              <motion.a 
-                href="#"
-                whileHover={{ 
-                  y: -4, 
-                  backgroundColor: "#0077B5",
-                  borderColor: "#0077B5"
-                }}
-                className="col-span-1 group flex flex-col justify-between p-5 rounded-2xl border backdrop-blur-xl transition-all duration-500 interactive shadow-xl"
-                style={{ 
-                  backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)',
-                  borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
-                }}
-              >
-                <div className={cn(
-                  "w-10 h-10 flex items-center justify-center rounded-lg transition-colors duration-500",
-                  isDark ? "bg-white/5 text-white/40 group-hover:bg-white/10 group-hover:text-white" : "bg-zinc-100 text-zinc-500 group-hover:bg-white/20 group-hover:text-white"
-                )}>
-                  <Linkedin size={20} />
-                </div>
-                <div className="mt-4">
-                  <span className={cn("text-xs font-bold block transition-colors duration-500", isDark ? "text-white" : "text-zinc-900", "group-hover:text-white")}>LinkedIn</span>
-                  <span className={cn("text-[9px] font-mono uppercase transition-colors duration-500", isDark ? "text-white/40" : "text-zinc-500", "group-hover:text-white/60")}>Connect</span>
-                </div>
-              </motion.a>
+              <Magnetic className="col-span-1" strength={0.1}>
+                <motion.a 
+                  href="#"
+                  whileHover={{ 
+                    y: -4, 
+                    backgroundColor: "#0077B5",
+                    borderColor: "#0077B5"
+                  }}
+                  className="w-full h-full group flex flex-col justify-between p-5 rounded-2xl border backdrop-blur-xl transition-all duration-500 interactive shadow-xl"
+                  style={{ 
+                    backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)',
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+                  }}
+                >
+                  <div className={cn(
+                    "w-10 h-10 flex items-center justify-center rounded-lg transition-colors duration-500",
+                    isDark ? "bg-white/5 text-white/40 group-hover:bg-white/10 group-hover:text-white" : "bg-zinc-100 text-zinc-500 group-hover:bg-white/20 group-hover:text-white"
+                  )}>
+                    <Linkedin size={20} />
+                  </div>
+                  <div className="mt-4">
+                    <span className={cn("text-xs font-bold block transition-colors duration-500", isDark ? "text-white" : "text-zinc-900", "group-hover:text-white")}>LinkedIn</span>
+                    <span className={cn("text-[9px] font-mono uppercase transition-colors duration-500", isDark ? "text-white/40" : "text-zinc-500", "group-hover:text-white/60")}>Connect</span>
+                  </div>
+                </motion.a>
+              </Magnetic>
 
               {/* X (Twitter) - Square Card */}
-              <motion.a 
-                href="#"
-                whileHover={{ 
-                  y: -4, 
-                  backgroundColor: "#FFFFFF",
-                  borderColor: "#FFFFFF"
-                }}
-                className="col-span-1 group flex flex-col justify-between p-5 rounded-2xl border backdrop-blur-xl transition-all duration-500 interactive shadow-xl"
-                style={{ 
-                  backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)',
-                  borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
-                }}
-              >
-                <div className={cn(
-                  "w-10 h-10 flex items-center justify-center rounded-lg transition-colors duration-500",
-                  isDark ? "bg-white/5 text-white/40 group-hover:bg-black/5 group-hover:text-black" : "bg-zinc-100 text-zinc-500 group-hover:bg-black/5 group-hover:text-black"
-                )}>
-                  <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current" aria-hidden="true">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                  </svg>
-                </div>
-                <div className="mt-4">
-                  <span className={cn("text-xs font-bold block transition-colors duration-500", isDark ? "text-white" : "text-zinc-900", "group-hover:text-black")}>X</span>
-                  <span className={cn("text-[9px] font-mono uppercase transition-colors duration-500", isDark ? "text-white/40" : "text-zinc-500", "group-hover:text-black/60")}>Follow</span>
-                </div>
-              </motion.a>
+              <Magnetic className="col-span-1" strength={0.1}>
+                <motion.a 
+                  href="#"
+                  whileHover={{ 
+                    y: -4, 
+                    backgroundColor: "#FFFFFF",
+                    borderColor: "#FFFFFF"
+                  }}
+                  className="w-full h-full group flex flex-col justify-between p-5 rounded-2xl border backdrop-blur-xl transition-all duration-500 interactive shadow-xl"
+                  style={{ 
+                    backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)',
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+                  }}
+                >
+                  <div className={cn(
+                    "w-10 h-10 flex items-center justify-center rounded-lg transition-colors duration-500",
+                    isDark ? "bg-white/5 text-white/40 group-hover:bg-black/5 group-hover:text-black" : "bg-zinc-100 text-zinc-500 group-hover:bg-black/5 group-hover:text-black"
+                  )}>
+                    <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current" aria-hidden="true">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                    </svg>
+                  </div>
+                  <div className="mt-4">
+                    <span className={cn("text-xs font-bold block transition-colors duration-500", isDark ? "text-white" : "text-zinc-900", "group-hover:text-black")}>X</span>
+                    <span className={cn("text-[9px] font-mono uppercase transition-colors duration-500", isDark ? "text-white/40" : "text-zinc-500", "group-hover:text-black/60")}>Follow</span>
+                  </div>
+                </motion.a>
+              </Magnetic>
 
               {/* LeetCode - Square Card */}
-              <motion.a 
-                href="#"
-                whileHover={{ 
-                  y: -4, 
-                  backgroundColor: "#FFA116",
-                  borderColor: "#FFA116"
-                }}
-                className="col-span-1 group flex flex-col justify-between p-5 rounded-2xl border backdrop-blur-xl transition-all duration-500 interactive shadow-xl"
-                style={{ 
-                  backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)',
-                  borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
-                }}
-              >
-                <div className={cn(
-                  "w-10 h-10 flex items-center justify-center rounded-lg transition-colors duration-500",
-                  isDark ? "bg-white/5 text-white/40 group-hover:bg-white/10 group-hover:text-white" : "bg-zinc-100 text-zinc-500 group-hover:bg-white/20 group-hover:text-white"
-                )}>
-                  <Code2 size={20} />
-                </div>
-                <div className="mt-4">
-                  <span className={cn("text-xs font-bold block transition-colors duration-500", isDark ? "text-white" : "text-zinc-900", "group-hover:text-white")}>LeetCode</span>
-                  <span className={cn("text-[9px] font-mono uppercase transition-colors duration-500", isDark ? "text-white/40" : "text-zinc-500", "group-hover:text-white/60")}>Solve</span>
-                </div>
-              </motion.a>
+              <Magnetic className="col-span-1" strength={0.1}>
+                <motion.a 
+                  href="#"
+                  whileHover={{ 
+                    y: -4, 
+                    backgroundColor: "#FFA116",
+                    borderColor: "#FFA116"
+                  }}
+                  className="w-full h-full group flex flex-col justify-between p-5 rounded-2xl border backdrop-blur-xl transition-all duration-500 interactive shadow-xl"
+                  style={{ 
+                    backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)',
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+                  }}
+                >
+                  <div className={cn(
+                    "w-10 h-10 flex items-center justify-center rounded-lg transition-colors duration-500",
+                    isDark ? "bg-white/5 text-white/40 group-hover:bg-white/10 group-hover:text-white" : "bg-zinc-100 text-zinc-500 group-hover:bg-white/20 group-hover:text-white"
+                  )}>
+                    <Code2 size={20} />
+                  </div>
+                  <div className="mt-4">
+                    <span className={cn("text-xs font-bold block transition-colors duration-500", isDark ? "text-white" : "text-zinc-900", "group-hover:text-white")}>LeetCode</span>
+                    <span className={cn("text-[9px] font-mono uppercase transition-colors duration-500", isDark ? "text-white/40" : "text-zinc-500", "group-hover:text-white/60")}>Solve</span>
+                  </div>
+                </motion.a>
+              </Magnetic>
 
               {/* Kaggle - Square Card */}
-              <motion.a 
-                href="#"
-                whileHover={{ 
-                  y: -4, 
-                  backgroundColor: "#20BEFF",
-                  borderColor: "#20BEFF"
-                }}
-                className="col-span-1 group flex flex-col justify-between p-5 rounded-2xl border backdrop-blur-xl transition-all duration-500 interactive shadow-xl"
-                style={{ 
-                  backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)',
-                  borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
-                }}
-              >
-                <div className={cn(
-                  "w-10 h-10 flex items-center justify-center rounded-lg transition-colors duration-500",
-                  isDark ? "bg-white/5 text-white/40 group-hover:bg-white/10 group-hover:text-white" : "bg-zinc-100 text-zinc-500 group-hover:bg-white/20 group-hover:text-white"
-                )}>
-                  <Database size={20} />
-                </div>
-                <div className="mt-4">
-                  <span className={cn("text-xs font-bold block transition-colors duration-500", isDark ? "text-white" : "text-zinc-900", "group-hover:text-white")}>Kaggle</span>
-                  <span className={cn("text-[9px] font-mono uppercase transition-colors duration-500", isDark ? "text-white/40" : "text-zinc-500", "group-hover:text-white/60")}>Compete</span>
-                </div>
-              </motion.a>
+              <Magnetic className="col-span-1" strength={0.1}>
+                <motion.a 
+                  href="#"
+                  whileHover={{ 
+                    y: -4, 
+                    backgroundColor: "#20BEFF",
+                    borderColor: "#20BEFF"
+                  }}
+                  className="w-full h-full group flex flex-col justify-between p-5 rounded-2xl border backdrop-blur-xl transition-all duration-500 interactive shadow-xl"
+                  style={{ 
+                    backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)',
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+                  }}
+                >
+                  <div className={cn(
+                    "w-10 h-10 flex items-center justify-center rounded-lg transition-colors duration-500",
+                    isDark ? "bg-white/5 text-white/40 group-hover:bg-white/10 group-hover:text-white" : "bg-zinc-100 text-zinc-500 group-hover:bg-white/20 group-hover:text-white"
+                  )}>
+                    <Database size={20} />
+                  </div>
+                  <div className="mt-4">
+                    <span className={cn("text-xs font-bold block transition-colors duration-500", isDark ? "text-white" : "text-zinc-900", "group-hover:text-white")}>Kaggle</span>
+                    <span className={cn("text-[9px] font-mono uppercase transition-colors duration-500", isDark ? "text-white/40" : "text-zinc-500", "group-hover:text-white/60")}>Compete</span>
+                  </div>
+                </motion.a>
+              </Magnetic>
             </div>
           </motion.div>
         </div>

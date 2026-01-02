@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, Variants } from "framer-motion";
 import { BioluminescentCanvas } from "@/components/canvas/bioluminescent-canvas";
-import { Button, ThemeToggle, LoadingScreen, FloatingDock, CustomCursor } from "@/components/ui";
+import { Button, ThemeToggle, LoadingScreen, FloatingDock, CustomCursor, Magnetic } from "@/components/ui";
 import { About, Projects, Experience, Contact } from "@/components/sections";
 import { HERO_WORDS, THEME } from "@/config";
 import { cn } from "@/lib/utils";
@@ -50,6 +50,25 @@ export default function Home() {
   useEffect(() => {
     document.documentElement.classList.toggle("dark", isDark);
   }, [isDark]);
+
+  // Force scroll to top on reload
+  useEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+    // Clear hash if present to prevent jumping
+    if (window.location.hash) {
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+  }, []);
+
+  // Ensure we are at top when loading completes
+  useEffect(() => {
+    if (!isLoading) {
+      window.scrollTo(0, 0);
+    }
+  }, [isLoading]);
 
   // Hide scrollbar during loading
   useEffect(() => {
@@ -276,14 +295,24 @@ export default function Home() {
             variants={wordVariants}
             className="flex flex-col sm:flex-row gap-4 justify-center pt-12"
           >
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
+              <Magnetic>
                 <Button
                   size="lg"
+                  onClick={() => {
+                    const section = document.querySelector('[data-section="about"]');
+                    if (section) {
+                      // @ts-ignore
+                      if (window.lenis) {
+                        // @ts-ignore
+                        window.lenis.scrollTo(section);
+                      } else {
+                        const top = section.getBoundingClientRect().top + window.pageYOffset;
+                        window.scrollTo({ top, behavior: "smooth" });
+                      }
+                    }
+                  }}
                   className={cn(
-                    "h-12 px-10 text-[10px] font-mono uppercase tracking-[0.3em] transition-all duration-500",
+                    "h-12 px-10 text-[10px] font-mono uppercase tracking-[0.3em] transition-all duration-500 interactive",
                     isDark
                       ? "bg-emerald-500 text-black hover:bg-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.2)]"
                       : "bg-emerald-600 text-white hover:bg-emerald-700 shadow-[0_0_30px_rgba(5,150,105,0.1)]"
@@ -291,17 +320,27 @@ export default function Home() {
                 >
                   Initialize_System
                 </Button>
-              </motion.div>
+              </Magnetic>
 
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
+              <Magnetic>
                 <Button
                   size="lg"
                   variant="outline"
+                  onClick={() => {
+                    const section = document.querySelector('[data-section="projects"]');
+                    if (section) {
+                      // @ts-ignore
+                      if (window.lenis) {
+                        // @ts-ignore
+                        window.lenis.scrollTo(section);
+                      } else {
+                        const top = section.getBoundingClientRect().top + window.pageYOffset;
+                        window.scrollTo({ top, behavior: "smooth" });
+                      }
+                    }
+                  }}
                   className={cn(
-                    "h-12 px-10 text-[10px] font-mono uppercase tracking-[0.3em] backdrop-blur-md transition-all duration-500",
+                    "h-12 px-10 text-[10px] font-mono uppercase tracking-[0.3em] backdrop-blur-md transition-all duration-500 interactive",
                     isDark
                       ? "border-white/10 text-white/40 hover:text-white hover:bg-white/5"
                       : "border-black/10 text-black/40 hover:text-black hover:bg-black/5"
@@ -309,24 +348,26 @@ export default function Home() {
                 >
                   View_Specs
                 </Button>
-              </motion.div>
+              </Magnetic>
             </motion.div>
         </motion.div>
 
         {/* Scroll Indicator */}
-        <div
-          ref={scrollArrowRef}
-          onClick={() => {
-            const aboutSection = document.querySelector('[data-section="about"]');
-            aboutSection?.scrollIntoView({ behavior: "smooth" });
-          }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center cursor-pointer animate-bounce interactive"
-        >
-          <p className={cn("text-[9px] font-mono uppercase tracking-[0.4em] transition-colors duration-500", proximityColor)}>
-            Explore_Matrix
-          </p>
-          <div className={cn("w-px h-12 bg-linear-to-b from-current to-transparent transition-colors duration-500", proximityColor)} />
-        </div>
+        <Magnetic strength={0.2}>
+          <div
+            ref={scrollArrowRef}
+            onClick={() => {
+              const aboutSection = document.querySelector('[data-section="about"]');
+              aboutSection?.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center cursor-pointer animate-bounce interactive"
+          >
+            <p className={cn("text-[9px] font-mono uppercase tracking-[0.4em] transition-colors duration-500", proximityColor)}>
+              Explore_Matrix
+            </p>
+            <div className={cn("w-px h-12 bg-linear-to-b from-current to-transparent transition-colors duration-500", proximityColor)} />
+          </div>
+        </Magnetic>
       </section>
 
       <About isDark={isDark} />

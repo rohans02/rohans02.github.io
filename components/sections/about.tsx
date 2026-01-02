@@ -159,7 +159,7 @@ export function About({ isDark }: AboutProps) {
                   <button
                     key={fileName}
                     onClick={() => setActiveFile(fileName as FileKey)}
-                    className={`w-full flex items-center gap-2 px-8 py-2 text-xs transition-all hover:bg-cyan-500/5 ${
+                    className={`w-full flex items-center gap-2 px-8 py-2 text-xs transition-all hover:bg-cyan-500/5 interactive ${
                       activeFile === fileName ? "bg-cyan-500/10 text-cyan-400" : "text-white/20"
                     }`}
                   >
@@ -176,10 +176,10 @@ export function About({ isDark }: AboutProps) {
               {/* TABS */}
               <div className="flex bg-black/20 border-b border-white/5 overflow-x-auto no-scrollbar">
                 {Object.keys(FILES).map((fileName) => (
-                  <div
+                  <button
                     key={fileName}
                     onClick={() => setActiveFile(fileName as FileKey)}
-                    className={`relative flex items-center gap-2 px-4 py-2 text-xs cursor-pointer border-r border-white/5 min-w-30 transition-all interactive ${
+                    className={`relative flex items-center gap-2 px-4 py-2 text-xs border-r border-white/5 min-w-30 transition-all interactive ${
                       activeFile === fileName 
                         ? "bg-black/40 text-cyan-400" 
                         : "bg-black/20 text-white/20 hover:bg-black/40"
@@ -203,7 +203,7 @@ export function About({ isDark }: AboutProps) {
                         />
                       </>
                     )}
-                  </div>
+                  </button>
                 ))}
               </div>
 

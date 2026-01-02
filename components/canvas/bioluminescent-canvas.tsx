@@ -4,12 +4,13 @@ import { useEffect, useRef } from "react";
 import { Particle, BioluminescentCanvasProps } from "@/lib/types";
 import { THEME } from "@/config/theme";
 
-// Texture paths for each section
-const SECTION_TEXTURES: Record<string, string> = {
-  hero: "/textures/spider-web.jpeg",
-  about: "/textures/about-frame.jpg",
-  projects: "/textures/spider-web.jpeg",
-  experience: "/textures/spider-web.jpeg", // Changed to spider-web for a more networked look
+// Texture configurations for each section
+const SECTION_CONFIG: Record<string, { path: string; threshold: number }> = {
+  hero: { path: "/textures/hero-frame.jpg", threshold: 180 },
+  about: { path: "/textures/about-frame.jpg", threshold: 245 },
+  projects: { path: "/textures/projects-frame.jpg", threshold: 230 },
+  experience: { path: "/textures/experience-frame.jpg", threshold: 210 },
+  contact: { path: "/textures/contact-frame.jpg", threshold: 240 },
 };
 
 export function BioluminescentCanvas({ 
@@ -32,7 +33,12 @@ export function BioluminescentCanvas({
   }, [scrollProgress]);
 
   // Helper function to set positions from a texture
-  const setPositionsFromTexture = (canvas: HTMLCanvasElement, particles: Particle[], texture: HTMLImageElement) => {
+  const setPositionsFromTexture = (
+    canvas: HTMLCanvasElement, 
+    particles: Particle[], 
+    texture: HTMLImageElement,
+    threshold: number
+  ) => {
     if (!texture || canvas.width === 0) return;
 
     const offscreen = document.createElement("canvas");
@@ -66,7 +72,7 @@ export function BioluminescentCanvas({
       for (let x = 0; x < canvas.width; x += step) {
         const index = (y * canvas.width + x) * 4;
         const brightness = (imageData[index] + imageData[index + 1] + imageData[index + 2]) / 3;
-        if (brightness < 150) {
+        if (brightness < threshold) {
           darkPixels.push({ x, y });
         }
       }
@@ -87,8 +93,9 @@ export function BioluminescentCanvas({
     if (particles.length === 0) return;
 
     const texture = texturesRef.current[section];
-    if (texture) {
-      setPositionsFromTexture(canvas, particles, texture);
+    const config = SECTION_CONFIG[section];
+    if (texture && config) {
+      setPositionsFromTexture(canvas, particles, texture, config.threshold);
     }
   };
 
@@ -116,14 +123,14 @@ export function BioluminescentCanvas({
 
     // Load all section textures
     const loadAllTextures = async () => {
-      const entries = Object.entries(SECTION_TEXTURES);
+      const entries = Object.entries(SECTION_CONFIG);
       const loaded: Record<string, HTMLImageElement> = {};
       
       await Promise.all(
-        entries.map(([section, src]) => {
+        entries.map(([section, config]) => {
           return new Promise<void>((resolve) => {
             const img = new Image();
-            img.src = src;
+            img.src = config.path;
             img.crossOrigin = "anonymous";
             img.onload = () => {
               loaded[section] = img;

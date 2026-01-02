@@ -28,33 +28,15 @@ export function CustomCursor({ isDark, activeSection }: CustomCursorProps) {
   const rightX = useTransform(ringX, (val) => val + 20);
 
   const getSectionColor = () => {
-    switch (activeSection) {
-      case 'about': return isDark ? "bg-cyan-400" : "bg-cyan-600";
-      case 'projects': return isDark ? "bg-emerald-500" : "bg-emerald-600";
-      case 'experience': return isDark ? "bg-emerald-500" : "bg-emerald-600";
-      case 'contact': return isDark ? "bg-emerald-500" : "bg-emerald-600";
-      default: return isDark ? "bg-emerald-500" : "bg-emerald-600";
-    }
+    return "bg-[#FDB813]"; // Sun Yellow
   };
 
   const getSectionBorderColor = () => {
-    switch (activeSection) {
-      case 'about': return isDark ? "border-cyan-400/30" : "border-cyan-600/30";
-      case 'projects': return isDark ? "border-emerald-500/30" : "border-emerald-600/30";
-      case 'experience': return isDark ? "border-emerald-500/30" : "border-emerald-600/30";
-      case 'contact': return isDark ? "border-emerald-500/30" : "border-emerald-600/30";
-      default: return isDark ? "border-emerald-500/30" : "border-emerald-600/30";
-    }
+    return "border-[#FDB813]/30";
   };
 
   const getSectionLineColor = () => {
-    switch (activeSection) {
-      case 'about': return isDark ? "bg-cyan-400" : "bg-cyan-600";
-      case 'projects': return isDark ? "bg-emerald-500" : "bg-emerald-600";
-      case 'experience': return isDark ? "bg-emerald-500" : "bg-emerald-600";
-      case 'contact': return isDark ? "bg-emerald-500" : "bg-emerald-600";
-      default: return isDark ? "bg-emerald-500" : "bg-emerald-600";
-    }
+    return "bg-[#FDB813]";
   };
 
   useEffect(() => {
@@ -102,7 +84,7 @@ export function CustomCursor({ isDark, activeSection }: CustomCursorProps) {
       {/* Main Cursor Dot - Raw position for zero latency */}
       <motion.div
         className={cn(
-          "absolute w-2 h-2 rounded-full transition-colors duration-300",
+          "absolute w-2 h-2 rounded-full transition-colors duration-300 shadow-[0_0_10px_#FDB813]",
           getSectionColor()
         )}
         animate={{
