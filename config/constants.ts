@@ -1,4 +1,4 @@
-import { Project } from "@/lib/types";
+import { Project, Experience } from "@/lib/types";
 
 // Site-wide constants
 
@@ -72,5 +72,35 @@ export const PROJECTS: Project[] = [
     github: "https://github.com",
     year: "2024",
     role: "Full Stack Developer",
+  },
+];
+
+export const EXPERIENCES: Experience[] = [
+  {
+    id: "01",
+    company: "Bio-Tech Systems",
+    role: "Senior Frontend Architect",
+    period: "2023 - Present",
+    description: "Leading the development of real-time biological data visualization platforms using Next.js and WebGL.",
+    stack: ["Next.js", "TypeScript", "Three.js", "Tailwind"],
+    status: "active",
+  },
+  {
+    id: "02",
+    company: "Neural Labs",
+    role: "Full Stack Developer",
+    period: "2021 - 2023",
+    description: "Architected and maintained complex dashboard systems for neural network monitoring and training visualization.",
+    stack: ["React", "Node.js", "PostgreSQL", "Docker"],
+    status: "completed",
+  },
+  {
+    id: "03",
+    company: "Eco-Digital",
+    role: "UI/UX Engineer",
+    period: "2019 - 2021",
+    description: "Designed and implemented interactive environmental simulation interfaces for educational purposes.",
+    stack: ["Vue.js", "D3.js", "Sass", "Firebase"],
+    status: "completed",
   },
 ];

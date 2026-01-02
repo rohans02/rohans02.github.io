@@ -8,14 +8,14 @@ import { THEME } from "@/config/theme";
 const SECTION_TEXTURES: Record<string, string> = {
   hero: "/textures/spider-web.jpeg",
   about: "/textures/about-frame.jpg",
-  projects: "/textures/spider-web.jpeg", // Reusing for now
+  projects: "/textures/spider-web.jpeg",
+  experience: "/textures/spider-web.jpeg", // Changed to spider-web for a more networked look
 };
 
 export function BioluminescentCanvas({ 
   isDark, 
   scrollProgress = 0, 
-  activeSection = 'hero',
-  isHoveringProject = false 
+  activeSection = 'hero'
 }: BioluminescentCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
@@ -25,16 +25,11 @@ export function BioluminescentCanvas({
   const scrollProgressRef = useRef(0);
   const activeSectionRef = useRef<string>(activeSection);
   const transitionProgressRef = useRef(1); // 0 = transitioning, 1 = complete
-  const isHoveringRef = useRef(false);
 
   // Keep refs in sync for the animation loop
   useEffect(() => {
     scrollProgressRef.current = scrollProgress;
   }, [scrollProgress]);
-
-  useEffect(() => {
-    isHoveringRef.current = isHoveringProject;
-  }, [isHoveringProject]);
 
   // Helper function to set positions from a texture
   const setPositionsFromTexture = (canvas: HTMLCanvasElement, particles: Particle[], texture: HTMLImageElement) => {
@@ -268,9 +263,9 @@ export function BioluminescentCanvas({
 
       const progress = scrollProgressRef.current;
       const particles = particlesRef.current;
+      const activeSection = activeSectionRef.current;
       const { x: mouseX, y: mouseY } = mouseRef.current;
-      const isHovering = isHoveringRef.current;
-      const repulsionRadius = isHovering ? 300 : 180;
+      const repulsionRadius = 180;
       
       // Fast transition - particles arrive quickly (~2 seconds)
       if (transitionProgressRef.current < 1) {
@@ -301,21 +296,9 @@ export function BioluminescentCanvas({
           const force = (repulsionRadius - distance) / repulsionRadius;
           const angle = Math.atan2(dy, dx);
           
-          if (isHovering) {
-            // Vortex / Swirl effect when hovering a project
-            // Tangential force + slight attraction
-            const swirlSpeed = 2.5;
-            particle.vx += Math.cos(angle + Math.PI / 2) * force * swirlSpeed;
-            particle.vy += Math.sin(angle + Math.PI / 2) * force * swirlSpeed;
-            
-            // Slight pull towards mouse to keep them in the vortex
-            particle.vx -= Math.cos(angle) * force * 0.2;
-            particle.vy -= Math.sin(angle) * force * 0.2;
-          } else {
-            // Normal repulsion
-            particle.vx += Math.cos(angle) * force * 0.6;
-            particle.vy += Math.sin(angle) * force * 0.6;
-          }
+          // Normal repulsion
+          particle.vx += Math.cos(angle) * force * 0.6;
+          particle.vy += Math.sin(angle) * force * 0.6;
         }
 
         // During transition: fast lerp to home, then immediately behave normally
@@ -331,7 +314,7 @@ export function BioluminescentCanvas({
 
         // Friction
         const baseFriction = 0.96 - (progress * 0.05);
-        const friction = isHovering && distance < repulsionRadius ? 0.92 : baseFriction;
+        const friction = baseFriction;
         particle.vx *= friction;
         particle.vy *= friction;
         
@@ -358,14 +341,10 @@ export function BioluminescentCanvas({
         // Dark mode: 0.8 opacity for glowing fireflies
         // Light mode: 0.2-0.3 opacity for subtle golden dust
         const baseOpacity = isDark ? 0.8 : 0.25;
-        const opacity = particle.baseBrightness * baseOpacity * illumination;
+        let opacity = particle.baseBrightness * baseOpacity * illumination;
 
         // Color shift when hovering project
         let particleColor = particle.color;
-        if (isHovering && distance < repulsionRadius) {
-          // Blend towards emerald (16, 185, 129)
-          particleColor = "16, 185, 129";
-        }
 
         const gradient = ctx.createRadialGradient(
           particle.x,

@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, Variants } from "framer-motion";
 import { BioluminescentCanvas } from "@/components/canvas/bioluminescent-canvas";
-import { Button, ThemeToggle, LoadingScreen, FloatingDock } from "@/components/ui";
-import { About, Projects } from "@/components/sections";
+import { Button, ThemeToggle, LoadingScreen, FloatingDock, CustomCursor } from "@/components/ui";
+import { About, Projects, Experience, Contact } from "@/components/sections";
 import { HERO_WORDS, THEME } from "@/config";
 import { cn } from "@/lib/utils";
 
@@ -33,9 +33,8 @@ export default function Home() {
   const [proximityColor, setProximityColor] = useState("text-muted-foreground");
   const [scrollY, setScrollY] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [activeSection, setActiveSection] = useState<'hero' | 'about' | 'projects' | 'contact'>('hero');
+  const [activeSection, setActiveSection] = useState<'hero' | 'about' | 'projects' | 'experience' | 'contact'>('hero');
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [isHoveringProject, setIsHoveringProject] = useState(false);
 
   const toggleTheme = () => {
     // Trigger ripple animation
@@ -114,7 +113,7 @@ export default function Home() {
         if (entry.isIntersecting) {
           const id = entry.target.getAttribute('data-section');
           if (id) {
-            setActiveSection(id as 'hero' | 'about' | 'projects' | 'contact');
+            setActiveSection(id as 'hero' | 'about' | 'projects' | 'experience' | 'contact');
           }
         }
       });
@@ -132,9 +131,10 @@ export default function Home() {
 
   return (
     <>
+      <CustomCursor isDark={isDark} activeSection={activeSection} />
       <LoadingScreen isDark={isDark} onLoadingComplete={() => setIsLoading(false)} />
       
-      {!isLoading && <FloatingDock isDark={isDark} className="z-50" />}
+      {!isLoading && <FloatingDock isDark={isDark} activeSection={activeSection} className="z-50" />}
 
       <motion.main 
         initial={{ opacity: 0 }}
@@ -156,7 +156,6 @@ export default function Home() {
         isDark={isDark} 
         scrollProgress={scrollProgress} 
         activeSection={activeSection} 
-        isHoveringProject={isHoveringProject}
       />
       
       {/* Global Blueprint Navigation Overlay */}
@@ -192,7 +191,7 @@ export default function Home() {
                   Section_Indexer
                 </span>
                 <div className="flex flex-col items-start gap-1">
-                  {['hero', 'about', 'projects'].map((section) => (
+                  {['hero', 'about', 'projects', 'experience', 'contact'].map((section) => (
                     <div key={section} className="flex items-center gap-2">
                       <div className={cn(
                         "w-1 h-1 rounded-full transition-all duration-300",
@@ -317,7 +316,11 @@ export default function Home() {
         {/* Scroll Indicator */}
         <div
           ref={scrollArrowRef}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center cursor-pointer animate-bounce"
+          onClick={() => {
+            const aboutSection = document.querySelector('[data-section="about"]');
+            aboutSection?.scrollIntoView({ behavior: "smooth" });
+          }}
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center cursor-pointer animate-bounce interactive"
         >
           <p className={cn("text-[9px] font-mono uppercase tracking-[0.4em] transition-colors duration-500", proximityColor)}>
             Explore_Matrix
@@ -327,16 +330,18 @@ export default function Home() {
       </section>
 
       <About isDark={isDark} />
-      <Projects isDark={isDark} onHoverChange={setIsHoveringProject} />
+      <Projects isDark={isDark} />
+      <Experience isDark={isDark} />
+      <Contact isDark={isDark} />
 
       {/* ========== THEME TRANSITION OVERLAY (color wipe only) ========== */}
       <motion.div
         className="fixed inset-0 z-60 pointer-events-none"
-        initial={{ clipPath: "circle(0% at calc(100% - 102px) 148px)" }}
+        initial={{ clipPath: "circle(0% at calc(100% - 102px) 86px)" }}
         animate={{
           clipPath: rippleActive 
-            ? "circle(150% at calc(100% - 102px) 148px)" 
-            : "circle(0% at calc(100% - 102px) 148px)"
+            ? "circle(150% at calc(100% - 102px) 86px)" 
+            : "circle(0% at calc(100% - 102px) 86px)"
         }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         style={{ 

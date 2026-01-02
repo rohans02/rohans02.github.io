@@ -20,8 +20,7 @@ export interface MousePosition {
 export interface BioluminescentCanvasProps {
   isDark: boolean;
   scrollProgress?: number;
-  activeSection?: 'hero' | 'about' | 'projects' | 'contact';
-  isHoveringProject?: boolean;
+  activeSection?: 'hero' | 'about' | 'projects' | 'experience' | 'contact';
 }
 export interface Project {
   id: string;
@@ -36,4 +35,14 @@ export interface Project {
   github?: string;
   year: string;
   role: string;
+}
+
+export interface Experience {
+  id: string;
+  company: string;
+  role: string;
+  period: string;
+  description: string;
+  stack: string[];
+  status: "active" | "completed";
 }

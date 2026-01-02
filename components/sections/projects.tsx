@@ -13,10 +13,9 @@ import { cn } from "@/lib/utils";
 
 interface ProjectsProps {
   isDark: boolean;
-  onHoverChange?: (isHovering: boolean) => void;
 }
 
-export function Projects({ isDark, onHoverChange }: ProjectsProps) {
+export function Projects({ isDark }: ProjectsProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   return (
@@ -34,7 +33,7 @@ export function Projects({ isDark, onHoverChange }: ProjectsProps) {
         }}
       />
 
-      <div className="max-w-7xl mx-auto space-y-12">
+      <div className="max-w-7xl mx-auto">
         {/* Technical Header */}
         <motion.div 
           initial={{ opacity: 0, width: 0 }}
@@ -42,7 +41,7 @@ export function Projects({ isDark, onHoverChange }: ProjectsProps) {
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           className={cn(
-            "flex items-center gap-3 px-4 py-2 rounded-lg border backdrop-blur-sm overflow-hidden",
+            "flex items-center gap-3 px-4 py-2 rounded-lg border backdrop-blur-sm overflow-hidden mb-20",
             isDark ? "border-white/5 bg-black/20" : "border-zinc-200 bg-zinc-50/50"
           )}
         >
@@ -78,11 +77,9 @@ export function Projects({ isDark, onHoverChange }: ProjectsProps) {
               isAnyHovered={hoveredIndex !== null}
               onHover={() => {
                 setHoveredIndex(index);
-                onHoverChange?.(true);
               }}
               onLeave={() => {
                 setHoveredIndex(null);
-                onHoverChange?.(false);
               }}
             />
           ))}
@@ -139,7 +136,7 @@ function BentoCard({
       onMouseEnter={onHover}
       onMouseLeave={onLeave}
       className={cn(
-        "group relative rounded-[2rem] border overflow-hidden cursor-pointer transition-all duration-500",
+        "group relative rounded-[2rem] border overflow-hidden cursor-pointer transition-all duration-500 interactive",
         isDark 
           ? "bg-black/10 border-white/10 hover:border-emerald-500/50 backdrop-blur-[2px]" 
           : "bg-white/10 border-zinc-200 hover:border-emerald-500/30 backdrop-blur-[2px]",

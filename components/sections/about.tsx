@@ -86,7 +86,7 @@ export function About({ isDark }: AboutProps) {
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="max-w-7xl mx-auto w-full space-y-12"
+        className="max-w-7xl mx-auto w-full"
       >
         {/* Minimal Terminal-style Header */}
         <motion.div 
@@ -95,7 +95,7 @@ export function About({ isDark }: AboutProps) {
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           className={cn(
-            "flex items-center gap-3 px-4 py-2 rounded-lg border backdrop-blur-sm overflow-hidden",
+            "flex items-center gap-3 px-4 py-2 rounded-lg border backdrop-blur-sm overflow-hidden mb-20",
             isDark ? "border-white/5 bg-black/20" : "border-zinc-200 bg-zinc-50/50"
           )}
         >
@@ -179,7 +179,7 @@ export function About({ isDark }: AboutProps) {
                   <div
                     key={fileName}
                     onClick={() => setActiveFile(fileName as FileKey)}
-                    className={`relative flex items-center gap-2 px-4 py-2 text-xs cursor-pointer border-r border-white/5 min-w-30 transition-all ${
+                    className={`relative flex items-center gap-2 px-4 py-2 text-xs cursor-pointer border-r border-white/5 min-w-30 transition-all interactive ${
                       activeFile === fileName 
                         ? "bg-black/40 text-cyan-400" 
                         : "bg-black/20 text-white/20 hover:bg-black/40"
@@ -249,7 +249,7 @@ export function About({ isDark }: AboutProps) {
           {/* 4. STATUS BAR */}
           <div className="bg-linear-to-r from-cyan-600 to-emerald-600 px-4 py-1.5 flex items-center justify-between text-[10px] text-white font-mono">
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1.5 hover:bg-white/10 px-2 py-0.5 rounded transition-colors cursor-pointer">
+              <div className="flex items-center gap-1.5 hover:bg-white/10 px-2 py-0.5 rounded transition-colors cursor-pointer interactive">
                 <Terminal size={12} />
                 <span>main*</span>
               </div>
