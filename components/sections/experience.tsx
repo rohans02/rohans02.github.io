@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { EXPERIENCES } from "@/config/constants";
 import { cn } from "@/lib/utils";
 import { Terminal, Briefcase, Calendar, Cpu, Hexagon } from "lucide-react";
@@ -25,19 +25,40 @@ export function Experience({ isDark }: ExperienceProps) {
         }} />
       </div>
 
-      <div className="max-w-4xl mx-auto w-full relative">
+      {/* Background Atmosphere */}
+      <div 
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-6xl max-h-250 blur-[160px] rounded-full pointer-events-none opacity-20"
+        style={{ 
+          background: isDark 
+            ? `radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.1) 50%, transparent 70%)`
+            : `radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, rgba(6, 182, 212, 0.05) 50%, transparent 70%)`
+        }}
+      />
+
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="max-w-6xl mx-auto w-full relative"
+      >
         {/* Technical Header */}
         <motion.div 
           initial={{ opacity: 0, width: 0 }}
           whileInView={{ opacity: 1, width: "100%" }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
           className={cn(
             "flex items-center gap-3 px-4 py-2 rounded-lg border backdrop-blur-sm overflow-hidden mb-12",
             isDark ? "border-white/5 bg-black/20" : "border-zinc-200 bg-zinc-50/50"
           )}
         >
-          <div className="flex items-center gap-2">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+            className="flex items-center gap-2"
+          >
             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span className={cn(
               "text-[10px] font-mono uppercase tracking-[0.15em]",
@@ -45,17 +66,22 @@ export function Experience({ isDark }: ExperienceProps) {
             )}>
               ~/src/experience/
             </span>
-          </div>
+          </motion.div>
           <div className={cn(
             "flex-1 h-px bg-linear-to-r to-transparent",
             isDark ? "from-emerald-500/20 via-emerald-500/10" : "from-emerald-500/10 via-emerald-500/5"
           )} />
-          <span className={cn(
-            "text-[9px] font-mono uppercase tracking-widest",
-            isDark ? "text-emerald-400/60" : "text-emerald-600/60"
-          )}>
+          <motion.span 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
+            className={cn(
+              "text-[9px] font-mono uppercase tracking-widest",
+              isDark ? "text-emerald-400/60" : "text-emerald-600/60"
+            )}
+          >
             cat career_architecture.log
-          </span>
+          </motion.span>
         </motion.div>
 
         {/* The Schematic Bus */}
@@ -99,7 +125,7 @@ export function Experience({ isDark }: ExperienceProps) {
             ))}
           </div>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }
@@ -139,9 +165,18 @@ function ExperienceModule({
     >
       {/* Connection Trace (Desktop) */}
       <div className={cn(
-        "hidden lg:block absolute -left-24 top-12 w-24 h-px transition-colors duration-500",
-        isHovered ? "bg-emerald-500" : "bg-emerald-500/20"
-      )} />
+        "hidden lg:block absolute -left-24 top-12 w-24 h-px transition-all duration-500",
+        isHovered ? "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" : "bg-emerald-500/20"
+      )}>
+        {isHovered && (
+          <motion.div 
+            initial={{ left: "-100%" }}
+            animate={{ left: "100%" }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            className="absolute top-0 w-1/2 h-full bg-linear-to-r from-transparent via-white to-transparent opacity-50"
+          />
+        )}
+      </div>
 
       {/* Timeline Node - Hexagon */}
       <div className="hidden lg:flex absolute -left-[6.5rem] top-10 z-30 items-center justify-center">
@@ -161,18 +196,33 @@ function ExperienceModule({
         </Magnetic>
       </div>
       
-      <div 
-        className={cn(
-          "relative overflow-hidden rounded-xl border backdrop-blur-xl transition-all duration-500 interactive shadow-2xl",
-          isHovered ? "-translate-y-1" : ""
-        )}
-        style={{ 
-          backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)',
-          borderColor: isHovered 
-            ? (isDark ? 'rgba(16, 185, 129, 0.4)' : 'rgba(16, 185, 129, 0.4)')
-            : (isDark ? 'rgba(6, 182, 212, 0.2)' : 'rgba(6, 182, 212, 0.1)')
-        }}
-      >
+      <Magnetic strength={0.02}>
+        <div 
+          className={cn(
+            "relative overflow-hidden rounded-xl border backdrop-blur-xl transition-all duration-500 interactive shadow-2xl",
+            isHovered ? "-translate-y-1" : ""
+          )}
+          style={{ 
+            backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)',
+            borderColor: isHovered 
+              ? (isDark ? 'rgba(16, 185, 129, 0.4)' : 'rgba(16, 185, 129, 0.4)')
+              : (isDark ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.1)')
+          }}
+        >
+        {/* Glitch Overlay on Hover */}
+        <AnimatePresence>
+          {isHovered && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 z-50 bg-emerald-500/5 pointer-events-none overflow-hidden"
+            >
+              <div className="absolute inset-0 opacity-20 animate-pulse bg-[repeating-linear-gradient(0deg,transparent,transparent_1px,rgba(16,185,129,0.1)_1px,rgba(16,185,129,0.1)_2px)]" />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Module Header */}
         <div className={cn(
           "flex items-center justify-between px-6 py-3 border-b transition-colors",
@@ -250,18 +300,19 @@ function ExperienceModule({
             </div>
             <div className="flex flex-wrap gap-2">
               {experience.stack.map((tech) => (
-                <div 
-                  key={tech}
-                  className={cn(
-                    "px-2 py-1 text-[9px] font-mono border transition-all duration-300",
-                    isDark 
-                      ? "bg-black/40 border-white/5 text-zinc-600" 
-                      : "bg-zinc-50 border-zinc-200 text-zinc-400",
-                    isHovered && "text-emerald-500 border-emerald-500/30 bg-emerald-500/5"
-                  )}
-                >
-                  "{tech}"
-                </div>
+                <Magnetic key={tech} strength={0.1}>
+                  <div 
+                    className={cn(
+                      "px-2 py-1 text-[9px] font-mono border transition-all duration-300 interactive",
+                      isDark 
+                        ? "bg-black/40 border-white/5 text-zinc-600" 
+                        : "bg-zinc-50 border-zinc-200 text-zinc-400",
+                      isHovered && "text-emerald-500 border-emerald-500/30 bg-emerald-500/5"
+                    )}
+                  >
+                    "{tech}"
+                  </div>
+                </Magnetic>
               ))}
             </div>
           </div>
@@ -278,6 +329,7 @@ function ExperienceModule({
           />
         </div>
       </div>
+      </Magnetic>
 
       {/* Background Glow */}
       <div className={cn(

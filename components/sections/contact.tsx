@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { 
@@ -21,6 +21,7 @@ interface ContactProps {
 
 export function Contact({ isDark }: ContactProps) {
   const [step, setStep] = useState(0);
+  const [hasBooted, setHasBooted] = useState(false);
   const [formState, setFormState] = useState({
     name: "",
     email: "",
@@ -28,13 +29,60 @@ export function Contact({ isDark }: ContactProps) {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSent, setIsSent] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
+  const terminalRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
 
   const steps = [
     { id: 'name', label: 'Your Name', placeholder: 'Enter your name...', key: 'name' },
     { id: 'email', label: 'Email Address', placeholder: 'Enter your email...', key: 'email' },
     { id: 'message', label: 'Your Message', placeholder: 'How can I help you?', key: 'message' },
   ];
+
+  // Boot sequence
+  useEffect(() => {
+    let isMounted = true;
+    
+    const boot = async () => {
+      // Clear logs before starting to prevent duplicates in Strict Mode
+      setLogs([]);
+      
+      const sequence = [
+        "Initializing core protocols...",
+        "Establishing secure uplink...",
+        "System ready. Welcome guest."
+      ];
+      
+      for (const msg of sequence) {
+        if (!isMounted) return;
+        addLog(msg);
+        await new Promise(r => setTimeout(r, 400));
+      }
+      
+      if (isMounted) setHasBooted(true);
+    };
+    
+    boot();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Auto-scroll terminal
+  useEffect(() => {
+    if (terminalRef.current) {
+      terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
+    }
+  }, [logs, step, isSubmitting]);
+
+  // Focus input on mount and step change
+  useEffect(() => {
+    if (!isSent && !isSubmitting && hasBooted) {
+      inputRef.current?.focus();
+    }
+  }, [step, isSent, isSubmitting, hasBooted]);
 
   const addLog = (msg: string) => {
     setLogs(prev => [...prev, `> ${msg}`]);
@@ -48,19 +96,20 @@ export function Contact({ isDark }: ContactProps) {
     }
 
     setIsSubmitting(true);
-    setLogs([]);
     
     const sequence = [
-      "Preparing message...",
-      "Securing connection...",
-      "Connecting to server...",
-      "Sending data...",
-      "Message delivered!"
+      "Initializing secure handshake...",
+      "Establishing encrypted tunnel...",
+      "Parsing payload headers...",
+      "Verifying checksums...",
+      "Routing through edge nodes...",
+      "Finalizing transmission...",
+      "Message delivered successfully!"
     ];
 
     for (const msg of sequence) {
       addLog(msg);
-      await new Promise(resolve => setTimeout(resolve, 600));
+      await new Promise(resolve => setTimeout(resolve, 600 + Math.random() * 400));
     }
 
     setIsSubmitting(false);
@@ -89,19 +138,40 @@ export function Contact({ isDark }: ContactProps) {
         }} />
       </div>
 
-      <div className="max-w-4xl mx-auto w-full relative">
+      {/* Background Atmosphere */}
+      <div 
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-6xl max-h-250 blur-[160px] rounded-full pointer-events-none opacity-20"
+        style={{ 
+          background: isDark 
+            ? `radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.1) 50%, transparent 70%)`
+            : `radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, rgba(6, 182, 212, 0.05) 50%, transparent 70%)`
+        }}
+      />
+
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="max-w-6xl mx-auto w-full relative"
+      >
         {/* Technical Header */}
         <motion.div 
           initial={{ opacity: 0, width: 0 }}
           whileInView={{ opacity: 1, width: "100%" }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
           className={cn(
             "flex items-center gap-3 px-4 py-2 rounded-lg border backdrop-blur-sm overflow-hidden mb-12",
             isDark ? "border-white/5 bg-black/20" : "border-zinc-200 bg-zinc-50/50"
           )}
         >
-          <div className="flex items-center gap-2">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+            className="flex items-center gap-2"
+          >
             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span className={cn(
               "text-[10px] font-mono uppercase tracking-[0.15em]",
@@ -109,28 +179,33 @@ export function Contact({ isDark }: ContactProps) {
             )}>
               ~/src/contact/
             </span>
-          </div>
+          </motion.div>
           <div className={cn(
             "flex-1 h-px bg-linear-to-r to-transparent",
             isDark ? "from-emerald-500/20 via-emerald-500/10" : "from-emerald-500/10 via-emerald-500/5"
           )} />
-          <span className={cn(
-            "text-[9px] font-mono uppercase tracking-widest",
-            isDark ? "text-emerald-400/60" : "text-emerald-600/60"
-          )}>
+          <motion.span 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
+            className={cn(
+              "text-[9px] font-mono uppercase tracking-widest",
+              isDark ? "text-emerald-400/60" : "text-emerald-600/60"
+            )}
+          >
             establish_uplink.sh
-          </span>
+          </motion.span>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           {/* Terminal Form */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="lg:col-span-7 space-y-6"
+            className="lg:col-span-8 flex flex-col"
           >
-            <div className="space-y-2">
+            <div className="space-y-2 mb-6">
               <h2 className={cn(
                 "text-2xl md:text-3xl font-bold tracking-tight",
                 isDark ? "text-white" : "text-zinc-900"
@@ -146,97 +221,148 @@ export function Contact({ isDark }: ContactProps) {
             </div>
 
             <div 
-              className="rounded-xl border overflow-hidden backdrop-blur-xl transition-all duration-500 shadow-2xl"
+              className="flex-1 rounded-xl border overflow-hidden backdrop-blur-xl transition-all duration-500 shadow-2xl flex flex-col"
               style={{ 
                 backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)',
-                borderColor: isDark ? 'rgba(6, 182, 212, 0.2)' : 'rgba(6, 182, 212, 0.1)'
+                borderColor: isDark ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.1)'
               }}
             >
               {/* Terminal Header */}
               <div className={cn(
-                "px-4 py-3 border-b flex items-center justify-between",
-                isDark ? "bg-black/20 border-white/5" : "bg-black/5 border-zinc-200"
+                "px-4 py-3 border-b flex items-center justify-between shrink-0",
+                isDark ? "bg-black/40 border-white/5" : "bg-zinc-100/50 border-zinc-200"
               )}>
                 <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <div className="flex gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-[#ff5f56]" />
+                    <div className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
+                    <div className="w-3 h-3 rounded-full bg-[#27c93f]" />
+                  </div>
                   <div className={cn(
-                    "flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest",
+                    "flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest ml-4",
                     isDark ? "text-emerald-400/60" : "text-emerald-600/60"
                   )}>
                     <Terminal size={12} />
-                    <span>bash — 80x24 — establish_uplink.sh</span>
+                    <span>bash — guest@portfolio — 80x24</span>
                   </div>
                 </div>
-                <div className="w-10" />
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-[9px] font-mono text-emerald-500/60 uppercase tracking-tighter">Online</span>
+                  </div>
+                </div>
               </div>
 
               {/* Terminal Body */}
-              <div className="p-6 font-mono text-sm flex flex-col min-h-98">
-                {isSent ? (
-                  <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="space-y-4 py-8 text-center my-auto"
-                  >
-                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-4">
-                      <Send className="w-5 h-5 text-emerald-500" />
-                    </div>
-                    <h3 className={cn("text-lg font-bold", isDark ? "text-white" : "text-zinc-900")}>
-                      MESSAGE SENT
-                    </h3>
-                    <p className="text-zinc-500 text-xs uppercase tracking-widest">
-                      Thank you! I'll get back to you as soon as possible.
-                    </p>
-                    <Magnetic>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => {
-                          setIsSent(false);
-                          setStep(0);
-                          setFormState({ name: "", email: "", message: "" });
-                          setLogs([]);
-                        }}
-                        className="mt-6 text-[10px] uppercase tracking-widest interactive"
-                      >
-                        Send_Another_Message
-                      </Button>
-                    </Magnetic>
-                  </motion.div>
-                ) : isSubmitting ? (
-                  <div className="space-y-2 py-4">
+              <div 
+                ref={terminalRef}
+                onClick={() => inputRef.current?.focus()}
+                className="p-6 font-mono text-sm flex flex-col h-100 overflow-y-auto relative scrollbar-none"
+              >
+                {!isSent && (
+                  <div className="space-y-2 mb-4">
                     {logs.map((log, i) => (
                       <motion.div
                         key={i}
-                        initial={{ opacity: 0, x: -10 }}
+                        initial={{ opacity: 0, x: -5 }}
                         animate={{ opacity: 1, x: 0 }}
                         className="text-emerald-500/80 text-xs"
                       >
                         {log}
                       </motion.div>
                     ))}
-                    <motion.div 
-                      animate={{ opacity: [1, 0] }}
-                      transition={{ repeat: Infinity, duration: 0.8 }}
-                      className="w-2 h-4 bg-emerald-500 inline-block ml-1"
-                    />
                   </div>
-                ) : (
+                )}
+
+                {isSent ? (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="flex-1 flex flex-col items-center justify-center text-center space-y-4"
+                  >
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-2">
+                      <Send className="w-5 h-5 text-emerald-500" />
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className={cn("text-lg font-bold tracking-tight", isDark ? "text-white" : "text-zinc-900")}>
+                        MESSAGE_DELIVERED
+                      </h3>
+                      <p className="text-zinc-500 text-[10px] uppercase tracking-[0.2em]">
+                        Uplink established successfully.
+                      </p>
+                    </div>
+                    <div className="pt-4">
+                      <Magnetic>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsSent(false);
+                            setStep(0);
+                            setFormState({ name: "", email: "", message: "" });
+                            setLogs([]);
+                            setHasBooted(false);
+                            // Trigger reboot
+                            const sequence = [
+                              "Initializing core protocols...",
+                              "Establishing secure uplink...",
+                              "System ready. Welcome guest."
+                            ];
+                            const boot = async () => {
+                              for (const msg of sequence) {
+                                addLog(msg);
+                                await new Promise(r => setTimeout(r, 400));
+                              }
+                              setHasBooted(true);
+                            };
+                            boot();
+                          }}
+                          className="text-[9px] uppercase tracking-widest interactive h-9 px-6"
+                        >
+                          New_Session
+                        </Button>
+                      </Magnetic>
+                    </div>
+                  </motion.div>
+                ) : isSubmitting ? (
+                  <div className="space-y-6 py-8 flex flex-col items-center justify-center my-auto">
+                    <div className="w-full max-w-xs space-y-4">
+                      <div className="flex justify-between text-[10px] font-mono uppercase tracking-widest text-emerald-500/60">
+                        <span>Transmitting_Payload</span>
+                        <span>{Math.min(100, Math.round((logs.filter(l => !l.includes("Initializing") && !l.includes("Establishing") && !l.includes("System ready")).length / 5) * 100))}%</span>
+                      </div>
+                      <div className="font-mono text-xs text-emerald-500/80 break-all leading-none">
+                        {"[".split("").map((char, i) => <span key={i}>{char}</span>)}
+                        {Array.from({ length: 20 }).map((_, i) => {
+                          const progress = (logs.filter(l => !l.includes("Initializing") && !l.includes("Establishing") && !l.includes("System ready")).length / 5) * 20;
+                          return (
+                            <span key={i} className={i < progress ? "text-emerald-500" : "text-emerald-500/10"}>
+                              █
+                            </span>
+                          );
+                        })}
+                        {"]".split("").map((char, i) => <span key={i}>{char}</span>)}
+                      </div>
+                      <div className="text-[9px] font-mono text-emerald-500/40 animate-pulse">
+                        {logs[logs.length - 1]}
+                      </div>
+                    </div>
+                  </div>
+                ) : hasBooted && (
                   <form onSubmit={handleSubmit} className="flex-1 flex flex-col">
-                    <div className="space-y-6 flex-1">
+                    <div className="space-y-4 flex-1">
                       {/* History of completed steps */}
                       {steps.slice(0, step).map((s, i) => (
-                        <div key={s.id} className="flex items-start gap-3 opacity-50">
-                          <span className="text-emerald-500 mt-1">
-                            <ChevronRight size={14} />
+                        <div key={s.id} className="flex items-baseline gap-2 opacity-50">
+                          <span className="text-emerald-500 shrink-0 font-mono text-xs">
+                            guest@portfolio:~/{s.id}$
                           </span>
                           <div className="flex-1">
-                            <div className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">
-                              {s.label}
-                            </div>
-                            <div className={cn(isDark ? "text-white" : "text-zinc-900")}>
+                            <span className={cn("font-mono text-sm", isDark ? "text-white" : "text-zinc-900")}>
                               {formState[s.key as keyof typeof formState]}
-                            </div>
+                            </span>
                           </div>
                         </div>
                       ))}
@@ -244,44 +370,70 @@ export function Contact({ isDark }: ContactProps) {
                       {/* Current active step */}
                       <motion.div 
                         key={steps[step].id}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        className="flex items-start gap-3"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="flex flex-col gap-1"
                       >
-                        <span className="text-emerald-500 mt-1">
-                          <ChevronRight size={14} />
-                        </span>
-                        <div className="flex-1 space-y-1">
-                          <label className="text-[10px] text-zinc-500 uppercase tracking-widest">
-                            {steps[step].label}
-                          </label>
-                          {steps[step].id === 'message' ? (
-                            <textarea 
-                              required
-                              placeholder={steps[step].placeholder}
-                              rows={4}
-                              value={formState.message}
-                              onKeyDown={handleKeyDown}
-                              onChange={(e) => setFormState({...formState, message: e.target.value})}
-                              className={cn(
-                                "w-full bg-transparent border-none outline-none p-0 text-sm resize-none transition-colors",
-                                isDark ? "text-white placeholder:text-white/10" : "text-zinc-900 placeholder:text-zinc-300"
-                              )}
-                            />
-                          ) : (
-                            <input 
-                              type={steps[step].id === 'email' ? 'email' : 'text'}
-                              required
-                              placeholder={steps[step].placeholder}
-                              value={formState[steps[step].key as keyof typeof formState]}
-                              onKeyDown={handleKeyDown}
-                              onChange={(e) => setFormState({...formState, [steps[step].key]: e.target.value})}
-                              className={cn(
-                                "w-full bg-transparent border-none outline-none p-0 text-sm transition-colors",
-                                isDark ? "text-white placeholder:text-white/10" : "text-zinc-900 placeholder:text-zinc-300"
-                              )}
-                            />
-                          )}
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-emerald-500 shrink-0 font-mono text-xs">
+                            guest@portfolio:~/{steps[step].id}$
+                          </span>
+                          <div className="flex-1 relative">
+                            {steps[step].id === 'message' ? (
+                              <div className="relative">
+                                <div className="relative">
+                                  <span className={cn(
+                                    "whitespace-pre-wrap break-all font-mono text-sm",
+                                    isDark ? "text-white" : "text-zinc-900"
+                                  )}>
+                                    {formState.message || (
+                                      <span className="text-zinc-500/50">{steps[step].placeholder}</span>
+                                    )}
+                                    {!isSubmitting && isFocused && <span className="terminal-cursor" />}
+                                  </span>
+                                </div>
+                                <textarea 
+                                  ref={inputRef as any}
+                                  required
+                                  spellCheck={false}
+                                  autoComplete="off"
+                                  value={formState.message}
+                                  onFocus={() => setIsFocused(true)}
+                                  onBlur={() => setIsFocused(false)}
+                                  onKeyDown={handleKeyDown}
+                                  onChange={(e) => setFormState({...formState, message: e.target.value})}
+                                  className="absolute inset-0 w-full h-full bg-transparent border-none outline-none p-0 text-sm resize-none text-transparent caret-transparent"
+                                />
+                              </div>
+                            ) : (
+                              <div className="relative flex items-center">
+                                <div className="relative">
+                                  <span className={cn(
+                                    "whitespace-pre font-mono text-sm",
+                                    isDark ? "text-white" : "text-zinc-900"
+                                  )}>
+                                    {formState[steps[step].key as keyof typeof formState] || (
+                                      <span className="text-zinc-500/50">{steps[step].placeholder}</span>
+                                    )}
+                                    {!isSubmitting && isFocused && <span className="terminal-cursor" />}
+                                  </span>
+                                </div>
+                                <input 
+                                  ref={inputRef as any}
+                                  type={steps[step].id === 'email' ? 'email' : 'text'}
+                                  required
+                                  spellCheck={false}
+                                  autoComplete="off"
+                                  value={formState[steps[step].key as keyof typeof formState]}
+                                  onFocus={() => setIsFocused(true)}
+                                  onBlur={() => setIsFocused(false)}
+                                  onKeyDown={handleKeyDown}
+                                  onChange={(e) => setFormState({...formState, [steps[step].key]: e.target.value})}
+                                  className="absolute inset-0 w-full bg-transparent border-none outline-none p-0 text-sm text-transparent caret-transparent"
+                                />
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </motion.div>
                     </div>
@@ -292,24 +444,24 @@ export function Contact({ isDark }: ContactProps) {
                           "w-2 h-2 rounded-full animate-pulse",
                           step === steps.length - 1 && formState.message ? "bg-emerald-500" : "bg-zinc-500/30"
                         )} />
-                        <span className="text-[10px] text-zinc-500 uppercase tracking-widest">
+                        <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-mono">
                           {step === steps.length - 1 ? "Ready to send" : `Step ${step + 1} of 3`}
                         </span>
                       </div>
                       <div className="flex gap-3">
                         {step > 0 && (
-                          <Magnetic>
+                          <Magnetic strength={0.1}>
                             <Button 
                               type="button"
                               onClick={() => setStep(step - 1)}
                               variant="ghost"
                               className="h-10 px-4 text-[10px] font-mono uppercase tracking-widest interactive"
                             >
-                              Back
+                              cd ..
                             </Button>
                           </Magnetic>
                         )}
-                        <Magnetic>
+                        <Magnetic strength={0.1}>
                           <Button 
                             type="submit"
                             disabled={!formState[steps[step].key as keyof typeof formState]}
@@ -320,7 +472,7 @@ export function Contact({ isDark }: ContactProps) {
                                 : "bg-emerald-600 text-white hover:bg-emerald-700"
                             )}
                           >
-                            {step === steps.length - 1 ? "Send Message" : "Next"}
+                            {step === steps.length - 1 ? "./send_msg" : "Next"}
                           </Button>
                         </Magnetic>
                       </div>
@@ -336,16 +488,16 @@ export function Contact({ isDark }: ContactProps) {
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="lg:col-span-5 space-y-6"
+            className="lg:col-span-4 flex flex-col"
           >
             <h3 className={cn(
-              "text-[10px] font-mono uppercase tracking-[0.3em]",
+              "text-[10px] font-mono uppercase tracking-[0.3em] mb-6",
               isDark ? "text-white/40" : "text-zinc-500"
             )}>
               External_Uplinks
             </h3>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 flex-1">
               {/* GitHub - Large Card */}
               <Magnetic className="col-span-2" strength={0.1}>
                 <motion.a 
@@ -358,7 +510,7 @@ export function Contact({ isDark }: ContactProps) {
                   className="w-full h-full group relative flex flex-col justify-between p-6 rounded-2xl border backdrop-blur-xl transition-all duration-500 interactive shadow-2xl overflow-hidden"
                   style={{ 
                     backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+                    borderColor: isDark ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.1)'
                   }}
                 >
                   <div className="flex justify-between items-start">
@@ -370,7 +522,7 @@ export function Contact({ isDark }: ContactProps) {
                     </div>
                     <ExternalLink size={16} className="text-zinc-500 opacity-0 group-hover:opacity-100 group-hover:text-white transition-all duration-500" />
                   </div>
-                  <div className="mt-8 relative z-10">
+                  <div className="mt-4 relative z-10">
                     <span className={cn("text-sm font-bold block transition-colors duration-500", isDark ? "text-white" : "text-zinc-900", "group-hover:text-white")}>GitHub</span>
                     <span className={cn("text-[10px] font-mono uppercase tracking-widest transition-colors duration-500", isDark ? "text-white/40" : "text-zinc-500", "group-hover:text-white/60")}>github.com/profile</span>
                   </div>
@@ -393,7 +545,7 @@ export function Contact({ isDark }: ContactProps) {
                   className="w-full h-full group flex flex-col justify-between p-5 rounded-2xl border backdrop-blur-xl transition-all duration-500 interactive shadow-xl"
                   style={{ 
                     backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+                    borderColor: isDark ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.1)'
                   }}
                 >
                   <div className={cn(
@@ -421,7 +573,7 @@ export function Contact({ isDark }: ContactProps) {
                   className="w-full h-full group flex flex-col justify-between p-5 rounded-2xl border backdrop-blur-xl transition-all duration-500 interactive shadow-xl"
                   style={{ 
                     backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+                    borderColor: isDark ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.1)'
                   }}
                 >
                   <div className={cn(
@@ -451,7 +603,7 @@ export function Contact({ isDark }: ContactProps) {
                   className="w-full h-full group flex flex-col justify-between p-5 rounded-2xl border backdrop-blur-xl transition-all duration-500 interactive shadow-xl"
                   style={{ 
                     backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+                    borderColor: isDark ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.1)'
                   }}
                 >
                   <div className={cn(
@@ -479,7 +631,7 @@ export function Contact({ isDark }: ContactProps) {
                   className="w-full h-full group flex flex-col justify-between p-5 rounded-2xl border backdrop-blur-xl transition-all duration-500 interactive shadow-xl"
                   style={{ 
                     backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+                    borderColor: isDark ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.1)'
                   }}
                 >
                   <div className={cn(
@@ -529,7 +681,7 @@ export function Contact({ isDark }: ContactProps) {
             </span>
           </div>
         </motion.div>
-      </div>
+      </motion.div>
     </section>
   );
 }

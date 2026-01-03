@@ -47,8 +47,8 @@ export function FloatingDock({ isDark, onToggle, activeSection, className, anima
       transition={{ duration: 0.8, delay: animateEntrance ? 0.3 : 0 }}
       className={`fixed top-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full backdrop-blur-xl border ${className || "z-50"}`}
       style={{ 
-        borderColor: theme.glassBorder,
-        backgroundColor: isDark ? "rgba(30, 30, 30, 0.4)" : "rgba(225, 225, 225, 0.4)"
+        borderColor: isDark ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.1)',
+        backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)'
       }}
     >
       <div className="flex gap-4 md:gap-6">

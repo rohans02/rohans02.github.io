@@ -17,12 +17,13 @@ export function ThemeToggle({ isDark, onToggle, className }: ThemeToggleProps) {
       <motion.button
         onClick={onToggle}
         className={cn(
-          "z-100 p-3 rounded-full border backdrop-blur-md transition-all duration-500 interactive",
-          isDark
-            ? "border-emerald-500/20 bg-black/20 hover:bg-emerald-500/10"
-            : "border-emerald-600/20 bg-white/20 hover:bg-emerald-600/10",
+          "z-100 p-3 rounded-full border backdrop-blur-xl transition-all duration-500 interactive",
           className
         )}
+        style={{ 
+          backgroundColor: isDark ? 'rgba(2, 13, 6, 0.4)' : 'rgba(248, 250, 245, 0.4)',
+          borderColor: isDark ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.1)'
+        }}
         whileTap={{ scale: 0.9 }}
         whileHover={{ scale: 1.05 }}
         aria-label="Toggle Theme"
